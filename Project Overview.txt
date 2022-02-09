@@ -18,14 +18,17 @@ Managers (privilege):
 - Create tasks for each employee
 - Track employees current progress
 - Check employees' tasks history
+- Send notifications for created tasks
+- Receive notifications for finished tasks from emmployees
 
 Employee (privilege):
 - Check tasks and deadline
 - Can comment and upload attachment
-- Can update task's progress
-- Submit task as completed
+- Can update task's progress and sends notification to the manager
+- Submit task as completed and sends notification to the manager
 
 Documents:
+- ERD
 - Proposal
 - Presentation
 - Full Report
