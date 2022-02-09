@@ -1,0 +1,31 @@
+Project Idea:
+Managers can create and give tasks to their employees, which then they can track employees progress.
+And employees can check their tasks and check-out the completed ones, or they can mark the percentage of their progress.
+
+Project will contain an application with 1 portal login for: 
+- Admin
+- Manager
+- Employee
+
+Admin (privilege):
+- Create managers
+- Create departments
+- Create employees
+- Assign managers to a department
+
+Managers (privilege):
+- Create employees.
+- Create tasks for each employee
+- Track employees current progress
+- Check employees' tasks history
+
+Employee (privilege):
+- Check tasks and deadline
+- Can comment and upload attachment
+- Can update task's progress
+- Submit task as completed
+
+Documents:
+- Proposal
+- Presentation
+- Full Report
