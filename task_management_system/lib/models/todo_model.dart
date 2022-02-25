@@ -27,6 +27,6 @@ class Todo {
   // This is for debuggin only
   @override
   String toString() {
-    return 'Todo(id: $id,title: $title,creationDate: $creationDate,isChecked: $isChecked,)';
+    return 'Todo(id: $id,title: $title,creationDate: $creationDate,isChecked: $isChecked)';
   }
 }

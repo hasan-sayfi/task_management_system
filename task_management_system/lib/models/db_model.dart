@@ -1,21 +1,27 @@
-import 'dart:async';
-
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import './todo_model.dart';
+import 'package:sqflite/sqflite.dart'; // sqflite for database
+import 'package:path/path.dart'; // the path package
+import './todo_model.dart'; // the todo model we created before
 
 class DatabaseConnect {
   Database? _database;
-
+  final todoSQL = '''
+      CREATE TABLE "todo"(
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT, 
+        "title" TEXT, 
+        "creationDate" TEXT, 
+        "isChecked" INTEGER,
+        PRIMARY KEY("recID" AUTOINCREMENT)
+      )
+      ''';
   // Create a getter and open a connection to database
   Future<Database?> get database async {
     // This is the location for the DB in device. ex - data/data/...
-    final db_path = await getDatabasesPath();
+    final dbPath = await getDatabasesPath();
     // This is the name of our DB
     const db_name = 'todo.db';
     // This joins the db_path and db_name and creates a full path for DB
     // ex - data/data/todo.db
-    final path = join(db_path, db_name);
+    final path = join(dbPath, db_name);
 
     // Open the connection
     _database = await openDatabase(path, version: 1, onCreate: _createDB);
@@ -27,13 +33,7 @@ class DatabaseConnect {
   // This creates Tables in the DB
   Future<void> _createDB(Database db, int version) async {
     // Ensure that the columns in the DB match the todo_model fields
-    await db.execute('''
-      CREATE TABLE todo (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, 
-        title TEXT, 
-        creationDate TEXT, 
-        isChecked INTEGER);
-        ''');
+    await db.execute(todoSQL);
   }
 
   // Insert function
@@ -56,7 +56,7 @@ class DatabaseConnect {
     // Delete the todo from DB based on ID
     await db!.delete(
       'todo', // Table name
-      where: 'id: = ?', // Where condition
+      where: 'id == ?', // Where condition
       whereArgs: [todo.id], // Args from the todo_model
     );
   }
