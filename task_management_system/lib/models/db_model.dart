@@ -18,7 +18,7 @@ class DatabaseConnect {
     // This is the location for the DB in device. ex - data/data/...
     final dbPath = await getDatabasesPath();
     // This is the name of our DB
-    const db_name = 'todo.db';
+    const db_name = 'toodoo.db';
     // This joins the db_path and db_name and creates a full path for DB
     // ex - data/data/todo.db
     final path = join(dbPath, db_name);
@@ -33,7 +33,14 @@ class DatabaseConnect {
   // This creates Tables in the DB
   Future<void> _createDB(Database db, int version) async {
     // Ensure that the columns in the DB match the todo_model fields
-    await db.execute(todoSQL);
+    await db.execute('''
+      CREATE TABLE todo(
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT, 
+        "title" TEXT, 
+        "creationDate" TEXT, 
+        "isChecked" INTEGER
+      )
+      ''');
   }
 
   // Insert function
