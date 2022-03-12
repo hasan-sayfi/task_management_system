@@ -1,9 +1,10 @@
 class Role {
-  int? roleID;
+  int roleID;
   final String roleName;
 
+  // Constructor
   Role({
-    this.roleID,
+    required this.roleID,
     required this.roleName,
   });
 
@@ -18,5 +19,14 @@ class Role {
   @override
   String toString() {
     return 'Role(deptID: $roleID,deptName: $roleName)';
+  }
+
+  // Dump Data
+  List<Role> generateRoles() {
+    return [
+      Role(roleID: 1, roleName: "Administrator"),
+      Role(roleID: 2, roleName: "Manager"),
+      Role(roleID: 3, roleName: "Employee"),
+    ];
   }
 }
