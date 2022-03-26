@@ -118,6 +118,15 @@ class Employee {
         empMobile: "0512345678",
         empAddress: "123 Main Street",
       ),
+      Employee(
+        empID: 9,
+        roleID: 3,
+        deptID: 2,
+        empName: "My Name",
+        empEmail: "MyName@test.com",
+        empMobile: "0512345678",
+        empAddress: "123 Main Street",
+      ),
     ];
   }
 
