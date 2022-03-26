@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_system/models/db_model.dart';
-import 'package:task_management_system/models/todo_model.dart';
-import 'package:task_management_system/widgets/todo_list.dart';
-import 'package:task_management_system/widgets/user_input.dart';
+import 'package:task_management_system/models/models_test/db_model.dart';
+import 'package:task_management_system/models/models_test/todo_model.dart';
+import 'package:task_management_system/widgets/todo_widgets/todo_list.dart';
+import 'package:task_management_system/widgets/todo_widgets/user_input.dart';
 
 class HomePage extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_system/models/db_model.dart';
-import 'package:task_management_system/widgets/todo_card.dart';
+import 'package:task_management_system/models/models_test/db_model.dart';
+import 'package:task_management_system/widgets/todo_widgets/todo_card.dart';
 
 // ignore: must_be_immutable
 class TodoList extends StatelessWidget {
