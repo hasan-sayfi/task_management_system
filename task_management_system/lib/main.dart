@@ -6,6 +6,8 @@ import 'package:task_management_system/screens/new_employee.dart';
 import 'package:task_management_system/screens/new_task.dart';
 import 'package:task_management_system/screens/task_records.dart';
 
+import 'constants/colors.dart';
+
 main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
@@ -16,6 +18,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ThemeData().colorScheme.copyWith(
+              secondary: kOrange,
+              primary: kOrange,
+            ),
+      ),
       // home: HomePage(),
       initialRoute: '/',
       routes: {
