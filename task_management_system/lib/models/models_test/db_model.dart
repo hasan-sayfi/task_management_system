@@ -1,62 +1,9 @@
 import 'package:sqflite/sqflite.dart'; // sqflite for database
-import 'package:path/path.dart';
-import 'package:task_management_system/models/models_test/todo_model.dart';
+import 'package:path/path.dart'; // the path package
+import './todo_model.dart'; // the todo model we created before
 
 class DatabaseConnect {
-  // Tables Queries:
-  final employeeSQL = '''
-      CREATE TABLE "Employee" (
-        "empID"	INTEGER NOT NULL,
-        "roleID"	INTEGER NOT NULL,
-        "deptID"	INTEGER NOT NULL,
-        "empName"	TEXT NOT NULL,
-        "empEmail"	TEXT NOT NULL,
-        "empMobile"	TEXT,
-        "empAddress"	TEXT,
-        "empAvatar"	TEXT,
-        FOREIGN KEY("deptID") REFERENCES "Department"("deptID"),
-        FOREIGN KEY("roleID") REFERENCES "Role"("roleID"),
-        PRIMARY KEY("empID" AUTOINCREMENT)
-      );
-      ''';
-  final departmentSQL = '''
-      CREATE TABLE "Department" (
-        "deptID"	INTEGER NOT NULL,
-        "deptName"	TEXT NOT NULL,
-        PRIMARY KEY("deptID" AUTOINCREMENT)
-      );
-      ''';
-  final taskSQL = '''
-      CREATE TABLE "Task" (
-        "taskID"	INTEGER,
-        "taskName"	TEXT NOT NULL,
-        "taskDesc"	TEXT NOT NULL,
-        "taskComment"	TEXT,
-        "taskStartDate"	TEXT NOT NULL,
-        "taskEndDate"	TEXT NOT NULL,
-        "taskProgress"	INTEGER NOT NULL DEFAULT 0,
-        "taskStatus"	INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY("taskID" AUTOINCREMENT)
-      );
-      ''';
-  final roleSQL = '''
-      CREATE TABLE "Role" (
-        "roleID"	INTEGER NOT NULL,
-        "roleName"	TEXT NOT NULL,
-        PRIMARY KEY("roleID" AUTOINCREMENT)
-      );
-      ''';
-  final employeeTaskRecordSQL = '''
-      CREATE TABLE "EmployeeTaskRecord" (
-        "recID"	INTEGER NOT NULL,
-        "empID"	INTEGER NOT NULL,
-        "taskID"	INTEGER NOT NULL,
-        "finishedDate"	TEXT NOT NULL,
-        FOREIGN KEY("empID") REFERENCES "Employee"("empID"),
-        FOREIGN KEY("taskID") REFERENCES "Task"("taskID"),
-        PRIMARY KEY("recID" AUTOINCREMENT)
-      );
-      ''';
+  Database? _database;
   final todoSQL = '''
       CREATE TABLE "todo"(
         "id" INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -66,18 +13,15 @@ class DatabaseConnect {
         PRIMARY KEY("recID" AUTOINCREMENT)
       )
       ''';
-
-  Database? _database;
-
   // Create a getter and open a connection to database
   Future<Database?> get database async {
     // This is the location for the DB in device. ex - data/data/...
     final dbPath = await getDatabasesPath();
     // This is the name of our DB
-    const dbName = 'task_management_system.db';
+    const db_name = 'toodoo.db';
     // This joins the db_path and db_name and creates a full path for DB
     // ex - data/data/todo.db
-    final path = join(dbPath, dbName);
+    final path = join(dbPath, db_name);
 
     // Open the connection
     _database = await openDatabase(path, version: 1, onCreate: _createDB);
@@ -89,7 +33,14 @@ class DatabaseConnect {
   // This creates Tables in the DB
   Future<void> _createDB(Database db, int version) async {
     // Ensure that the columns in the DB match the todo_model fields
-    await db.execute(todoSQL);
+    await db.execute('''
+      CREATE TABLE todo(
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT, 
+        "title" TEXT, 
+        "creationDate" TEXT, 
+        "isChecked" INTEGER
+      )
+      ''');
   }
 
   // Insert function
