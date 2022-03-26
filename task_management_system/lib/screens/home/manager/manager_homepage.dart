@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/employee.dart';
+import 'package:task_management_system/screens/home/manager/ManagerTaskTab.dart';
 import 'package:task_management_system/screens/home/manager/manager_employee_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_tab.dart';
 
@@ -16,10 +17,7 @@ class _HomePageState extends State<HomePage> {
   static const List<Widget> _botBarOptions = <Widget>[
     HomeManager(),
     ManagerEmployeeTab(),
-    Text(
-      'Tasks',
-      style: optionStyle,
-    ),
+    ManagerTaskTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -47,7 +45,9 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               // TODO: Logout action
-              print(Employee.getTotalEmployeesInDepartment(2));
+              setState(() {
+                print("Refreshing!");
+              });
             },
             icon: Icon(Icons.logout, size: 30),
           )

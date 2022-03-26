@@ -6,12 +6,12 @@ class BuildEmployeeCard extends StatelessWidget {
   final BuildContext context;
   final Employee employee;
   static const double SPACE_BETWEEN_CONTENT = 4;
+  static const double FONT_SIZE = 15;
 
   const BuildEmployeeCard({
-    Key? key,
     required this.context,
     required this.employee,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class BuildEmployeeCard extends StatelessWidget {
                       Text(
                         employee.empName,
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0,
                             color: Colors.grey[700]),
@@ -61,34 +61,37 @@ class BuildEmployeeCard extends StatelessWidget {
                       Text(
                         employee.empEmail,
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
+                            fontSize: FONT_SIZE,
+                            // fontWeight: FontWeight.bold,
+                            // letterSpacing: 1,
                             color: Colors.grey[700]),
                       ),
                       SizedBox(height: SPACE_BETWEEN_CONTENT),
                       Text(
                         employee.empMobile,
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
+                            fontSize: FONT_SIZE,
+                            // fontWeight: FontWeight.bold,
+                            // letterSpacing: 1,
                             color: Colors.grey[700]),
                       ),
                       SizedBox(height: SPACE_BETWEEN_CONTENT),
                       Text(
                         employee.empAddress,
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
+                            fontSize: FONT_SIZE,
+                            // fontWeight: FontWeight.bold,
+                            // letterSpacing: 1,
                             color: Colors.grey[700]),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(width: 25),
-                IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.edit),
+                ),
               ],
             ),
             SizedBox(height: 10),
