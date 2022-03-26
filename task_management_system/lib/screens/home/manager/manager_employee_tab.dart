@@ -14,7 +14,7 @@ class ManagerEmployeeTab extends StatefulWidget {
 }
 
 class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
-  var _allEmployees = ManagerEmployeeTab.allEmployees;
+  List<Employee> _allEmployees = ManagerEmployeeTab.allEmployees;
   // final List<Employee> _allEmployees = [];
 
   @override
@@ -27,26 +27,30 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
         },
         child: Icon(Icons.add),
       ),
-      body: ManagerEmployeeList(_allEmployees),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        backgroundColor: kOrange,
+        color: Colors.white,
+        child: ManagerEmployeeList(_allEmployees),
+      ),
     );
   }
 
-  void _addNewEmployee(int empID, int roleID, int deptID, String empName,
-      String empEmail, String empMobile, String empAddress, String empAvatar) {
-    final newEmp = Employee(
-      empID: _allEmployees.length + 1,
-      roleID: 3,
-      deptID: 2,
-      empName: empName,
-      empEmail: empEmail,
-      empMobile: empMobile,
-      empAddress: empAddress,
-    );
-
-    setState(() {
-      _allEmployees.add(newEmp);
-    });
-  }
+  // void _addNewEmployee(int empID, int roleID, int deptID, String empName,
+  //     String empEmail, String empMobile, String empAddress, String empAvatar) {
+  //   final newEmp = Employee(
+  //     empID: _allEmployees.length + 1,
+  //     roleID: 3,
+  //     deptID: 2,
+  //     empName: empName,
+  //     empEmail: empEmail,
+  //     empMobile: empMobile,
+  //     empAddress: empAddress,
+  //   );
+  //   setState(() {
+  //     _allEmployees.add(newEmp);
+  //   });
+  // }
 
   void _startAddNewEmployee(BuildContext context) async {
     dynamic emp = await Navigator.pushNamed(context, AppRoutes.NEW_EMPLOYEE);
@@ -57,9 +61,10 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
 
 // Refresh inficator
   Future<void> _refresh() async {
-    setState(() {});
-    return Future.delayed(
-      Duration(seconds: 3),
-    );
+    return await Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _allEmployees = Employee.getEmployeesInDepartment(2);
+      });
+    });
   }
 }
