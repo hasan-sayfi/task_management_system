@@ -42,7 +42,7 @@ class Task {
   }
 
   // Dump Data
-  List<Task> generateTasks() {
+  static List<Task> generateTasks() {
     return [
       Task(
         taskID: 1,
@@ -127,5 +127,17 @@ class Task {
         managerID: 4,
       ),
     ];
+  }
+
+  static List<Task> getTasksWithManager(int mgrId) {
+    List<Task> tasksList = [];
+    for (var task in generateTasks()) {
+      if (mgrId == task.managerID) {
+        tasksList.add(task);
+      }
+    }
+    print("Task Size: " + tasksList.length.toString());
+
+    return tasksList;
   }
 }
