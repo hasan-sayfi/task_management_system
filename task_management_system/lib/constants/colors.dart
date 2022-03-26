@@ -18,3 +18,7 @@ const Color kRedDark = Color(0xFFEA636A);
 
 const Color kFontBodyColor = Color(0xFF707070);
 const Color kBgColor = Color(0xFFF3F3F3);
+
+const Color kOrangeLight = Color(0xFFFFB233);
+const Color kOrange = Color(0xFFFF8F00);
+const Color kOrangeDark = Color(0xFFD45D00);
