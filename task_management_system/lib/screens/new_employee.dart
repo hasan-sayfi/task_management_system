@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/employee.dart';
 
-import 'home/manager/manager_employee_tab.dart';
-
 class NewEmployee extends StatefulWidget {
   @override
   _NewEmployeeState createState() => _NewEmployeeState();
@@ -150,9 +148,7 @@ class _NewEmployeeState extends State<NewEmployee> {
                       return null;
                   },
                   decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.person,
-                    ),
+                    prefixIcon: Icon(Icons.location_on),
                     labelText: 'Address',
                     helperText: '1234 Street, Riyadh, Saudi Arabia',
                     hintText: '1234 Street, Riyadh, Saudi Arabia',

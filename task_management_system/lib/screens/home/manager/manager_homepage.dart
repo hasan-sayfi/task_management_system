@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
-import 'package:task_management_system/models/employee.dart';
-import 'package:task_management_system/screens/home/manager/ManagerTaskTab.dart';
+import 'package:task_management_system/screens/home/manager/manager_task_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_employee_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_tab.dart';
 
@@ -12,8 +11,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _botBarOptions = <Widget>[
     HomeManager(),
     ManagerEmployeeTab(),
@@ -71,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: kDefaultColor,
         onTap: _onItemTapped,
       ),
       backgroundColor: kBgColor,

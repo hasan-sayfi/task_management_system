@@ -20,7 +20,7 @@ class BuildEmployeeCard extends StatelessWidget {
       width: 50,
       // padding: EdgeInsets.all(50),
       decoration: BoxDecoration(
-        color: kYellowLight,
+        color: Colors.grey[300],
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
