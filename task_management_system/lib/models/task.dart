@@ -140,4 +140,16 @@ class Task {
 
     return tasksList;
   }
+
+  static List<Task> getCompletedTasksWithManager(int mgrId) {
+    List<Task> tasksList = [];
+    for (var task in generateTasks()) {
+      if (mgrId == task.managerID && task.taskStatus == true) {
+        tasksList.add(task);
+      }
+    }
+    print("Task Size: " + tasksList.length.toString());
+
+    return tasksList;
+  }
 }
