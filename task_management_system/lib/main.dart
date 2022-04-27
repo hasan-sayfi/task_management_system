@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/routes/app_routes.dart';
+import 'package:task_management_system/screens/home/admin/admin_homepage.dart';
 import 'package:task_management_system/screens/home/manager/manager_homepage.dart';
 import 'package:task_management_system/screens/login/logout.dart';
 import 'package:task_management_system/screens/new_employee.dart';
@@ -27,12 +28,14 @@ class MyApp extends StatelessWidget {
       // home: HomePage(),
       initialRoute: '/',
       routes: {
-        AppRoutes.HOME: (context) => HomePage(),
+        AppRoutes.HOME: (context) => ManagerHomePage(),
+        AppRoutes.MANAGER_HOME: (context) => ManagerHomePage(),
         AppRoutes.NEW_EMPLOYEE: (context) => NewEmployee(),
         AppRoutes.NEW_TASK: (context) => NewTask(),
         AppRoutes.NEW_DEPARTMENT: (context) => NewTask(),
         AppRoutes.TASK_RECORDS: (context) => TaskRecords(),
         AppRoutes.LOGOUT: (context) => Logout(),
+        AppRoutes.ADMIN_HOME: (context) => AdminHomePage(),
       },
     );
   }
