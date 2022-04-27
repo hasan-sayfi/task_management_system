@@ -43,10 +43,11 @@ class ManagerEmployeeList extends StatelessWidget {
                 childAspectRatio: 2.3,
               ),
               itemBuilder: (BuildContext context, int index) {
-                return BuildEmployeeCard(
-                  context: context,
-                  employee: employees[index],
-                );
+                return Center();
+                // return BuildEmployeeCard(
+                //   context: context,
+                //   employee: employees[index],
+                // );
               },
             ),
     );
