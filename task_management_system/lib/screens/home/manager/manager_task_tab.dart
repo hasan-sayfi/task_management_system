@@ -63,9 +63,13 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
 
   void _startAddNewTask(BuildContext context) async {
     dynamic task = await Navigator.pushNamed(context, AppRoutes.NEW_TASK);
-    setState(() {
-      allTasks.add(task);
-    });
+    print("Task: " + task.toString());
+    if (task != null) {
+      print("Task (setState): " + task.toString());
+      setState(() {
+        allTasks.add(task);
+      });
+    }
   }
 
 // Refresh inficator

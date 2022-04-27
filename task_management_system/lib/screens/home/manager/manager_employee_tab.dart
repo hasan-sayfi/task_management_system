@@ -36,27 +36,13 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
     );
   }
 
-  // void _addNewEmployee(int empID, int roleID, int deptID, String empName,
-  //     String empEmail, String empMobile, String empAddress, String empAvatar) {
-  //   final newEmp = Employee(
-  //     empID: _allEmployees.length + 1,
-  //     roleID: 3,
-  //     deptID: 2,
-  //     empName: empName,
-  //     empEmail: empEmail,
-  //     empMobile: empMobile,
-  //     empAddress: empAddress,
-  //   );
-  //   setState(() {
-  //     _allEmployees.add(newEmp);
-  //   });
-  // }
-
   void _startAddNewEmployee(BuildContext context) async {
     dynamic emp = await Navigator.pushNamed(context, AppRoutes.NEW_EMPLOYEE);
-    setState(() {
-      _allEmployees.add(emp);
-    });
+    if (emp != null) {
+      setState(() {
+        _allEmployees.add(emp);
+      });
+    }
   }
 
 // Refresh inficator

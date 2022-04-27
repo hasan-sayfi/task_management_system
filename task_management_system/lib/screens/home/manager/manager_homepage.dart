@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
+import 'package:task_management_system/routes/app_routes.dart';
 import 'package:task_management_system/screens/home/manager/manager_task_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_employee_tab.dart';
-import 'package:task_management_system/screens/home/manager/manager_tab.dart';
+import 'package:task_management_system/screens/home/manager/manager_home_tab.dart';
 
-class HomePage extends StatefulWidget {
+class ManagerHomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _ManagerHomePageState createState() => _ManagerHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ManagerHomePageState extends State<ManagerHomePage> {
   int _selectedIndex = 0;
   static const List<Widget> _botBarOptions = <Widget>[
-    HomeManager(),
+    ManagerHomeTab(),
     ManagerEmployeeTab(),
     ManagerTaskTab(),
   ];
@@ -28,15 +29,19 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
-        backgroundColor: Color.fromRGBO(243, 243, 243, 1),
+        backgroundColor: kBgColor,
         elevation: 0,
         backwardsCompatibility: false,
-        leading: Container(
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            Icons.menu_sharp,
-            size: 50,
-          ),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              icon: Icon(
+                Icons.menu_sharp,
+                size: 40,
+              ),
+            );
+          },
         ),
         actions: [
           IconButton(
@@ -74,6 +79,33 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: kBgColor,
       body: Center(
         child: _botBarOptions.elementAt(_selectedIndex),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('Admin'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AppRoutes.ADMIN_HOME);
+              },
+            ),
+            ListTile(
+              title: const Text('Manager'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AppRoutes.MANAGER_HOME);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
