@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
-import 'package:task_management_system/models/employee.dart';
+import 'package:task_management_system/models/database_connection.dart';
+import 'package:task_management_system/script/table_fields.dart';
 
 class BuildEmployeeCard extends StatelessWidget {
   final BuildContext context;
-  final Employee employee;
+  final Map<String, dynamic> employee;
   static const double SPACE_BETWEEN_CONTENT = 4;
   static const double FONT_SIZE = 15;
 
-  const BuildEmployeeCard({
+  DatabaseConnect conn = DatabaseConnect();
+
+  BuildEmployeeCard({
     required this.context,
     required this.employee,
   });
+
+  Future<String> _deptName(int deptID) async {
+    final data = await conn.getDepartmentMapList(deptID);
+    print('_deptName: ' + data[0][0]);
+
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +39,19 @@ class BuildEmployeeCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage(
-                    (employee.empAvatar == null)
+                    (employee[TableFields.empAvatar] == null)
                         ? "assets/avatars/img2.png"
-                        : employee
-                            .empAvatar!, // TODO: Replace with avatar image
+                        : employee[TableFields
+                            .empAvatar]!, // TODO: Replace with avatar image
                   ),
                 ),
-                SizedBox(width: 25),
+                SizedBox(width: 20),
                 Padding(
                   padding: const EdgeInsets.only(top: 5),
                   child: Column(
@@ -49,17 +59,37 @@ class BuildEmployeeCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Text(
-                        employee.empName,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0,
-                            color: Colors.grey[700]),
+                      Row(
+                        children: [
+                          Text(
+                            employee[TableFields.empName],
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0,
+                                color: Colors.grey[700]),
+                          ),
+                          Text(
+                            ' (${employee[TableFields.roleID] == 1 ? "Adminitrator" : employee[TableFields.roleID] == 2 ? "Manager" : "Employee"})',
+                            // ' (${employee[TableFields.roleID]})',
+                            style: TextStyle(
+                                fontSize: FONT_SIZE,
+                                // fontWeight: FontWeight.bold,
+                                // letterSpacing: 1,
+                                color: Colors.grey[700]),
+                          ),
+                        ],
                       ),
                       SizedBox(height: SPACE_BETWEEN_CONTENT),
                       Text(
-                        employee.empEmail,
+                        // '(${employee[TableFields.deptID]})',
+                        _deptName(employee[TableFields.deptID]).toString(),
+                        style: TextStyle(
+                            fontSize: FONT_SIZE, color: Colors.grey[700]),
+                      ),
+                      SizedBox(height: SPACE_BETWEEN_CONTENT),
+                      Text(
+                        employee[TableFields.empEmail],
                         style: TextStyle(
                             fontSize: FONT_SIZE,
                             // fontWeight: FontWeight.bold,
@@ -68,7 +98,7 @@ class BuildEmployeeCard extends StatelessWidget {
                       ),
                       SizedBox(height: SPACE_BETWEEN_CONTENT),
                       Text(
-                        employee.empMobile,
+                        employee[TableFields.empMobile],
                         style: TextStyle(
                             fontSize: FONT_SIZE,
                             // fontWeight: FontWeight.bold,
@@ -77,7 +107,7 @@ class BuildEmployeeCard extends StatelessWidget {
                       ),
                       SizedBox(height: SPACE_BETWEEN_CONTENT),
                       Text(
-                        employee.empAddress,
+                        employee[TableFields.empAddress],
                         style: TextStyle(
                             fontSize: FONT_SIZE,
                             // fontWeight: FontWeight.bold,
@@ -88,10 +118,6 @@ class BuildEmployeeCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 25),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.edit),
-                ),
               ],
             ),
             SizedBox(height: 10),
