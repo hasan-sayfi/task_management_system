@@ -7,7 +7,7 @@ class Task {
   DateTime taskEndDate; // Deadline for the task
   int taskProgress; // percentage of task completion
   bool taskStatus; // status of task: in-progress (false) or finished (true)
-  int managerID;
+  int empID;
 
   Task({
     this.taskID,
@@ -18,7 +18,7 @@ class Task {
     required this.taskEndDate,
     required this.taskProgress,
     required this.taskStatus,
-    required this.managerID,
+    required this.empID,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,14 +31,14 @@ class Task {
       'taskEndDate': taskEndDate.toString(),
       'taskProgress': taskProgress,
       'taskStatus': taskStatus ? 1 : 0,
-      'managerID': managerID,
+      'empID': empID,
     };
   }
 
   // This is for debuggin only
   @override
   String toString() {
-    return 'Task(taskID: $taskID, taskName: $taskName, taskDesc: $taskDesc,taskComment: $taskComment, taskStartDate: $taskStartDate, taskEndDate: $taskEndDate, taskProgress: $taskProgress, taskStatus: $taskStatus, managerID: $managerID)';
+    return 'Task(taskID: $taskID, taskName: $taskName, taskDesc: $taskDesc,taskComment: $taskComment, taskStartDate: $taskStartDate, taskEndDate: $taskEndDate, taskProgress: $taskProgress, taskStatus: $taskStatus, empID: $empID)';
   }
 
   // Dump Data
@@ -52,7 +52,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 12, 12, 0),
         taskProgress: 50,
         taskStatus: false,
-        managerID: 2,
+        empID: 5,
       ),
       Task(
         taskID: 2,
@@ -62,7 +62,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 14, 17, 0),
         taskProgress: 0,
         taskStatus: false,
-        managerID: 2,
+        empID: 6,
       ),
       Task(
         taskID: 3,
@@ -72,7 +72,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 10, 16, 20),
         taskProgress: 100,
         taskStatus: true,
-        managerID: 2,
+        empID: 9,
       ),
       Task(
           taskID: 4,
@@ -83,16 +83,16 @@ class Task {
           taskEndDate: DateTime.utc(2022, 3, 20, 12, 0),
           taskProgress: 20,
           taskStatus: false,
-          managerID: 3),
+          empID: 7),
       Task(
         taskID: 5,
         taskName: "Annual Raise",
         taskDesc: "Increase raise allowance for all employees by 5%.",
-        taskStartDate: DateTime.utc(2022, 3, 16, 08, 30),
-        taskEndDate: DateTime.utc(2022, 3, 12, 12, 0),
+        taskStartDate: DateTime.utc(2022, 3, 12, 08, 30),
+        taskEndDate: DateTime.utc(2022, 3, 16, 12, 0),
         taskProgress: 50,
         taskStatus: false,
-        managerID: 3,
+        empID: 7,
       ),
       Task(
         taskID: 6,
@@ -102,7 +102,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 31, 12, 0),
         taskProgress: 100,
         taskStatus: true,
-        managerID: 3,
+        empID: 7,
       ),
       Task(
         taskID: 7,
@@ -113,7 +113,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 13, 12, 0),
         taskProgress: 100,
         taskStatus: true,
-        managerID: 2,
+        empID: 5,
       ),
       Task(
         taskID: 8,
@@ -124,7 +124,7 @@ class Task {
         taskEndDate: DateTime.utc(2022, 3, 12, 12, 0),
         taskProgress: 67,
         taskStatus: false,
-        managerID: 4,
+        empID: 8,
       ),
     ];
   }
@@ -132,7 +132,7 @@ class Task {
   static List<Task> getTasksWithManager(int mgrId) {
     List<Task> tasksList = [];
     for (var task in generateTasks()) {
-      if (mgrId == task.managerID) {
+      if (mgrId == task.empID) {
         tasksList.add(task);
       }
     }
@@ -144,7 +144,7 @@ class Task {
   static List<Task> getCompletedTasksWithManager(int mgrId) {
     List<Task> tasksList = [];
     for (var task in generateTasks()) {
-      if (mgrId == task.managerID && task.taskStatus == true) {
+      if (mgrId == task.empID && task.taskStatus == true) {
         tasksList.add(task);
       }
     }

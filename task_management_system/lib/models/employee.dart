@@ -1,11 +1,11 @@
 class Employee {
   int? empID;
-  int roleID;
-  int deptID;
-  final String empName;
-  final String empEmail;
-  final String empMobile;
-  final String empAddress;
+  late int roleID;
+  late int deptID;
+  late String empName;
+  late String empEmail;
+  late String empMobile;
+  late String empAddress;
   String? empAvatar = "assets/avatars/img1.png";
 
 // Constructor
@@ -31,6 +31,18 @@ class Employee {
       'empAddress': empAddress,
       'empAvatar': empAvatar,
     };
+  }
+
+  //Extract Employee object from MAP object
+  Employee.fromMapObject(Map<String, dynamic> map) {
+    this.empID = map['empID'];
+    this.roleID = map['roleID'];
+    this.deptID = map['deptID'];
+    this.empName = map['empName'];
+    this.empEmail = map['empEmail'];
+    this.empMobile = map['empMobile'];
+    this.empAddress = map['empAddress'];
+    this.empAvatar = map['empAvatar'];
   }
 
   // This is for debuggin only
@@ -96,7 +108,7 @@ class Employee {
         roleID: 3,
         deptID: 2,
         empName: "Fahad",
-        empEmail: "Lana@test.com",
+        empEmail: "Fahad@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
       ),
@@ -139,12 +151,15 @@ class Employee {
     return counter - 1;
   }
 
-  static List<Employee> getEmployeesInDepartment(int deptId) {
+  static List<Employee> getEmployeesInDepartment(int? deptId) {
     List<Employee> employeesList = [];
     for (var emp in generateEmployees()) {
-      if (deptId == emp.deptID && emp.roleID == 3) {
+      if (deptId != null) {
+        if (deptId == emp.deptID && emp.roleID == 3) {
+          employeesList.add(emp);
+        }
+      } else
         employeesList.add(emp);
-      }
     }
     print("Employees Size: " + employeesList.length.toString());
 

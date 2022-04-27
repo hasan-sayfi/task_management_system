@@ -1,18 +1,24 @@
 class Role {
-  int roleID;
-  final String roleName;
+  int? roleID;
+  late String roleName;
 
   // Constructor
-  Role({
-    required this.roleID,
-    required this.roleName,
-  });
+  Role({this.roleID, required this.roleName}) {
+    roleID = this.roleID;
+    roleName = this.roleName;
+  }
 
   Map<String, dynamic> toMap() {
     return {
-      'deptID': roleID,
-      'deptName': roleName,
+      'roleID': roleID,
+      'roleName': roleName,
     };
+  }
+
+  //Extract Task object from MAP object
+  Role.fromMapObject(Map<String, dynamic> map) {
+    this.roleID = map['roleID'];
+    this.roleName = map['roleName'];
   }
 
   // This is for debuggin only

@@ -1,6 +1,6 @@
 class Department {
   int? deptID;
-  final String deptName;
+  late String deptName;
 
   Department({
     this.deptID,
@@ -12,6 +12,12 @@ class Department {
       'deptID': deptID,
       'deptName': deptName,
     };
+  }
+
+  //Extract Department object from MAP object
+  Department.fromMapObject(Map<String, dynamic> map) {
+    this.deptID = map['deptID'];
+    this.deptName = map['deptName'];
   }
 
   // This is for debuggin only
