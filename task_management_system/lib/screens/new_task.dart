@@ -10,8 +10,10 @@ class NewTask extends StatefulWidget {
 
 class _NewTaskState extends State<NewTask> {
   final int managerId = 2;
-  late final DateTime startDate;
-  late final DateTime endDate;
+  late DateTime startDate;
+  late DateTime endDate;
+  String startDateSqlite = 'yyyy-MM-dd HH:mm:ss';
+  String endDateSqlite = 'yyyy-MM-dd HH:mm:ss';
 
   var _formKey = GlobalKey<FormState>();
   TextEditingController _titleController = TextEditingController();
@@ -281,7 +283,11 @@ class _NewTaskState extends State<NewTask> {
         _endDateController.text =
             DateFormat('dd MMM yyyy hh:mm a').format(endDate).toString();
 
+        endDateSqlite =
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(endDate).toString();
+
         print("_endTimeController.text: " + _endTimeController.text);
+        print("DateFormat('yyyy-MM-dd HH:mm:ss'): " + endDateSqlite);
       });
   }
 
@@ -311,7 +317,7 @@ class _NewTaskState extends State<NewTask> {
         taskEndDate: taskEndDate,
         taskProgress: 0,
         taskStatus: false,
-        managerID: managerId,
+        empID: managerId,
       );
 
       Navigator.pop(context, newTask);
