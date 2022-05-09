@@ -7,6 +7,7 @@ class Employee {
   late String empMobile;
   late String empAddress;
   String? empAvatar = "assets/avatars/img1.png";
+  late String empPassword;
 
 // Constructor
   Employee({
@@ -17,7 +18,8 @@ class Employee {
     required this.empEmail,
     required this.empMobile,
     required this.empAddress,
-    this.empAvatar,
+    this.empAvatar = 'assets/avatars/img2.png',
+    required this.empPassword,
   });
 
   Map<String, dynamic> toMap() {
@@ -30,6 +32,7 @@ class Employee {
       'empMobile': empMobile,
       'empAddress': empAddress,
       'empAvatar': empAvatar,
+      'empPassword': empPassword,
     };
   }
 
@@ -43,6 +46,7 @@ class Employee {
     this.empMobile = map['empMobile'];
     this.empAddress = map['empAddress'];
     this.empAvatar = map['empAvatar'];
+    this.empPassword = map['empPassword'];
   }
 
   // This is for debuggin only
@@ -63,6 +67,7 @@ class Employee {
         empMobile: "0512345678",
         empAddress: "123 Main Street",
         empAvatar: "assets/avatars/img1.png",
+        empPassword: "123",
       ),
       Employee(
         empID: 2,
@@ -73,6 +78,7 @@ class Employee {
         empMobile: "0512345678",
         empAddress: "123 Main Street",
         empAvatar: "assets/avatars/img2.png",
+        empPassword: "123",
       ),
       Employee(
         empID: 3,
@@ -83,6 +89,7 @@ class Employee {
         empMobile: "0512345678",
         empAddress: "123 Main Street",
         empAvatar: "assets/avatars/img3.png",
+        empPassword: "123",
       ),
       Employee(
         empID: 4,
@@ -93,6 +100,7 @@ class Employee {
         empMobile: "0512345678",
         empAddress: "123 Main Street",
         empAvatar: "assets/avatars/img5.png",
+        empPassword: "123",
       ),
       Employee(
         empID: 5,
@@ -102,6 +110,7 @@ class Employee {
         empEmail: "Noor@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
+        empPassword: "123",
       ),
       Employee(
         empID: 6,
@@ -111,6 +120,7 @@ class Employee {
         empEmail: "Fahad@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
+        empPassword: "123",
       ),
       Employee(
         empID: 7,
@@ -120,6 +130,7 @@ class Employee {
         empEmail: "Khalid@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
+        empPassword: "123",
       ),
       Employee(
         empID: 8,
@@ -129,6 +140,7 @@ class Employee {
         empEmail: "Rayan@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
+        empPassword: "123",
       ),
       Employee(
         empID: 9,
@@ -138,6 +150,7 @@ class Employee {
         empEmail: "MyName@test.com",
         empMobile: "0512345678",
         empAddress: "123 Main Street",
+        empPassword: "123",
       ),
     ];
   }
