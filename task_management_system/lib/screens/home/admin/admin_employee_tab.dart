@@ -1,11 +1,14 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/database_connection.dart';
-import 'package:task_management_system/models/department.dart';
 import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/script/table_fields.dart';
+import 'package:task_management_system/utils/common_methods.dart';
 import 'package:task_management_system/widgets/build_employee_card.dart';
-import 'package:task_management_system/widgets/manager_employee_list.dart';
+import 'package:toast/toast.dart';
 
 class AdminEmployeeTab extends StatefulWidget {
   @override
@@ -23,10 +26,9 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
-
+  TextEditingController _passwordController = TextEditingController();
+  var _showPass;
   List<Map<String, dynamic>> _employees = [];
-  var _selectedDep = 0;
-
   bool _isLoading = true;
   int count = 0;
   static const double SIZE_BETWEEN_TEXT_FIELDS = 15;
@@ -42,7 +44,6 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
 
   Future<void> _validateForm() async {
     FocusScope.of(context).unfocus();
-    print('Before validate: ' + _formKey.currentState!.validate().toString());
     if (_formKey.currentState!.validate())
       await _addEmployee();
     else
@@ -51,6 +52,20 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
 
   // Insert a new Employee to the database
   Future<void> _addEmployee() async {
+    final String subject = 'Account Created for ${_emailController.text}';
+    final List<String> recipients = [_emailController.text];
+    final String toastMessage = 'Employee Successfully Added!';
+    final String password = CreateCryptoRandomString();
+    _passwordController.text = password;
+
+    final String body = '''
+    Your account details below:
+    Username: ${_emailController.text}
+    Password: ${_passwordController.text}
+
+    You can change your password once you login.
+    ''';
+
     Employee employee = Employee(
       roleID: _roleController,
       deptID: _deptController,
@@ -58,8 +73,10 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
       empEmail: _emailController.text,
       empMobile: _mobileController.text,
       empAddress: _addressController.text,
+      empPassword: _passwordController.text,
     );
     await conn.insertEmployee(employee);
+    print('Employee inserted: ' + employee.toString());
 
     _roleController = -1;
     _deptController = -1;
@@ -67,17 +84,20 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
     _emailController.text = '';
     _mobileController.text = '';
     _addressController.text = '';
+    _passwordController.text = '';
 
     // Close the bottom sheet
     Navigator.pop(context);
+
+    sendEmail(subject, recipients, body);
+    showToast(toastMessage);
+    // showToast('Employee Successfully Added!');
 
     _refreshEmployees();
   }
 
   // Update an existing Employee
   Future<void> _updateEmployee(int empID) async {
-    print('(_updateEmployee) _deptController: ' + _deptController.toString());
-
     Employee employee = Employee(
       empID: empID,
       roleID: _roleController,
@@ -86,6 +106,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
       empEmail: _emailController.text,
       empMobile: _mobileController.text,
       empAddress: _addressController.text,
+      empPassword: _passwordController.text,
     );
     print('(conn.updateEmployee): ' + employee.toString());
 
@@ -96,9 +117,30 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
     _emailController.text = '';
     _mobileController.text = '';
     _addressController.text = '';
+    _passwordController.text = '';
 
     // Close the bottom sheet
     Navigator.pop(context);
+
+    showToast('Employee Successfully updated!');
+
+    _refreshEmployees();
+  }
+
+  // Delete an existing Employee
+  Future<void> _deleteEmployee(int empID) async {
+    await conn.deleteEmployee(empID);
+    _roleController = -1;
+    _deptController = -1;
+    _nameController.text = '';
+    _emailController.text = '';
+    _mobileController.text = '';
+    _addressController.text = '';
+    _passwordController.text = '';
+
+    // Close the bottom sheet
+    // Navigator.pop(context);
+    showToast('Employee Successfully delete!');
 
     _refreshEmployees();
   }
@@ -106,11 +148,22 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
   @override
   void initState() {
     super.initState();
+    _showPass = false;
+    ToastContext().init(context);
     _refreshEmployees(); // Loading the employees when the app starts
+  }
+
+  static final Random _random = Random.secure();
+
+  static String CreateCryptoRandomString([int length = 8]) {
+    var values = List<int>.generate(length, (i) => _random.nextInt(256));
+
+    return base64Url.encode(values);
   }
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     return Scaffold(
       backgroundColor: kBgColor,
       floatingActionButton: FloatingActionButton(
@@ -146,9 +199,9 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                     itemCount: _employees.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
-                      crossAxisSpacing: 10,
+                      // crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 2.1,
+                      childAspectRatio: 1.9,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(
@@ -177,17 +230,12 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                               ],
                               onSelected: (value) => value == 1
                                   ? {
-                                      print('onSelected: (value): ' +
-                                          value.toString()),
-                                      print('_employees[index]: ' +
-                                          _employees[index].toString()),
                                       _showForm(
                                           _employees[index][TableFields.empID]),
                                     }
                                   : {
-                                      print(
-                                          '_employees[index][TableFields.empID]: ' +
-                                              _employees[index].toString()),
+                                      _deleteEmployee(
+                                          _employees[index][TableFields.empID]),
                                     },
                             ),
                           ),
@@ -235,10 +283,6 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
       _departmentsID.add(dept['deptID']);
     }
 
-    print("#_departments: " + _departments.toString());
-    print("#_departmentsValue: " + _departmentsValue[1].length.toString());
-    print("#_departmentsID: " + _departmentsID.toString());
-
     if (empID != null) {
       // id == null -> create new item
       // id != null -> update an existing item
@@ -248,20 +292,18 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
       _deptController = existingEmployee[TableFields.deptID];
       _nameController.text = existingEmployee[TableFields.empName];
       _emailController.text = existingEmployee[TableFields.empEmail];
-      _emailController.text = existingEmployee[TableFields.empEmail];
       _mobileController.text = existingEmployee[TableFields.empMobile];
       _addressController.text = existingEmployee[TableFields.empAddress];
-
-      print('(_showForm)_deptController: ' + _deptController.toString());
-
-      print('_deptController Before: ' + _deptController.toString());
+      _passwordController.text = existingEmployee[TableFields.empPassword];
+    } else {
+      _roleController = -1;
+      _deptController = -1;
+      _nameController.text = '';
+      _emailController.text = '';
+      _mobileController.text = '';
+      _addressController.text = '';
+      _passwordController.text = '';
     }
-    List<String> deptList = [
-      'Administrator',
-      'Information Technology',
-      'Human Resources',
-      'Marketing'
-    ];
 
     showModalBottomSheet<void>(
       context: context,
@@ -273,297 +315,314 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
         ),
       ),
       builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(height: 10),
-                      DropdownButtonFormField(
-                        value: _roleController == -1
-                            ? null
-                            : _roleController == 2
-                                ? 'Manager'
-                                : 'Employee',
-                        items: ['Manager', 'Employee']
-                            .map((String item) => DropdownMenuItem<String>(
-                                child: Text(item), value: item))
-                            .toList(),
-                        onChanged: (String? value) {
-                          setState(() {
-                            print("previous $_roleName");
-                            print("selected $value");
-                            _roleName = value!;
-                            switch (_roleName) {
-                              case 'Manager':
-                                _roleController = 2;
-                                break;
-                              case 'Employee':
-                                _roleController = 3;
-                                break;
-                              default:
-                                _roleController = -1;
-                            }
-                            print('_roleController: ' +
-                                _roleController.toString());
-                          });
-                        },
-                        validator: (value) {
-                          print('Validator value: ' + value.toString());
-                          if (value.toString().isEmpty ||
-                              value == -1 ||
-                              value == null)
-                            return 'Please select a role';
-                          else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.settings_accessibility_sharp,
-                          ),
-                          labelText: 'Please select user role',
-                          helperText: 'Employee',
-                          hintText: 'Employee',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      DropdownButtonFormField(
-                        value: _deptController == -1
-                            ? null
-                            : _departmentsValue[_deptController - 1],
-                        items: _departmentsValue
-                            .map((String item) => DropdownMenuItem<String>(
-                                child: Text(item), value: item))
-                            .toList(),
-                        // items: deptList
-                        //     .map((e) =>
-                        //         DropdownMenuItem(child: Text(e), value: e))
-                        //     .toList(),
-                        onChanged: (String? value) {
-                          setState(() {
-                            print("previous $_departmentName");
-                            print("selected $value");
-                            _departmentName = value!;
-
-                            _deptController =
-                                deptList.indexOf(_departmentName) + 1;
-
-                            print('deptList.indexOf(_departmentName): ' +
-                                deptList.indexOf(_departmentName).toString());
-                            print('_deptController: ' +
-                                _deptController.toString());
-
-                            // _deptController = _departmentsID[
-                            //     _departmentsValue.indexOf(_departmentName)];
-                            // print('_deptController After: ' +
-                            //     _deptController.toString());
-                            // print(
-                            //     '_departmentsID[_departmentsValue.indexOf(_departmentName)]: ' +
-                            //         _departmentsID[_departmentsValue
-                            //                 .indexOf(_departmentName)]
-                            //             .toString());
-                            // print('_departmentsValue[_deptController - 1]: ' +
-                            //     _departmentsValue[_deptController - 1]);
-                          });
-                        },
-                        validator: (value) {
-                          print('Validator value: ' + value.toString());
-
-                          if (value.toString().isEmpty ||
-                              value == -1 ||
-                              value == null)
-                            return 'Please select a department';
-                          else
-                            return null;
-                        },
-                        // value: _departmentName,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.business_outlined,
-                          ),
-                          labelText: 'Please select a department',
-                          helperText: 'Information Technology',
-                          hintText: 'Please select a department',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: Colors.amber[800],
-                        maxLength: 25,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.name,
-                        controller: _nameController,
-                        validator: (value) {
-                          if (value!.isEmpty ||
-                              value.length < 6 ||
-                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value))
-                            return 'Please enter correct name';
-                          else
-                            return null;
-                        },
-                        // autovalidate: true,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.person,
-                          ),
-                          labelText: 'Full Name',
-                          helperText: 'John Doe',
-                          hintText: 'John Doe',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: Colors.amber[800],
-                        maxLength: 30,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _emailController,
-                        validator: (value) {
-                          if (value!.isEmpty ||
-                              value.length < 8 ||
-                              !RegExp(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$")
-                                  .hasMatch(value)) {
-                            return 'Please enter a valid email address!';
-                          } else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.email,
-                          ),
-                          labelText: 'Email',
-                          helperText: 'exampl@domain.com',
-                          hintText: 'exampl@domain.com',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: Colors.amber[800],
-                        maxLength: 10,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.phone,
-                        controller: _mobileController,
-                        validator: (value) {
-                          if (value!.isEmpty ||
-                              value.length < 10 ||
-                              !RegExp(r'^05\d{8}$').hasMatch(value)) {
-                            return 'Please enter a valid phone number!';
-                          } else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.phone_android,
-                          ),
-                          labelText: 'Mobile',
-                          helperText: '05xxxxxxxx',
-                          hintText: '05xxxxxxxx',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: Colors.amber[800],
-                        maxLength: 30,
-                        maxLines: 2,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.streetAddress,
-                        controller: _addressController,
-                        validator: (value) {
-                          if (value!.isEmpty || value.length < 10) {
-                            return 'Please enter a valid address!';
-                          } else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.location_on),
-                          labelText: 'Address',
-                          helperText: '1234 Street, Riyadh, Saudi Arabia',
-                          hintText: '1234 Street, Riyadh, Saudi Arabia',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Card(
-                        color: Colors.grey[200],
-                        child: InkWell(
-                          onTap: () async {
-                            // Save new journal
-                            if (empID == null) {
-                              _validateForm();
-                            }
-                            if (empID != null) {
-                              await _updateEmployee(empID);
-                            }
-                            // Clear the text fields
-                            _nameController.text = '';
+        return StatefulBuilder(
+          builder: (context, setState) => Container(
+            padding: EdgeInsets.all(20),
+            height: 700,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisSize: MainAxisSize.max,
+                children: [
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: 10),
+                        DropdownButtonFormField(
+                          value: _roleController == -1
+                              ? null
+                              : _roleController == 1
+                                  ? 'Administrator'
+                                  : _roleController == 2
+                                      ? 'Manager'
+                                      : 'Employee',
+                          items: ['Administrator', 'Manager', 'Employee']
+                              .map((String item) => DropdownMenuItem<String>(
+                                  child: Text(item), value: item))
+                              .toList(),
+                          onChanged: (String? value) {
+                            this.setState(() {
+                              _roleName = value!;
+                              switch (_roleName) {
+                                case 'Manager':
+                                  _roleController = 2;
+                                  break;
+                                case 'Employee':
+                                  _roleController = 3;
+                                  break;
+                                default:
+                                  _roleController = -1;
+                              }
+                            });
                           },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
-                            child: Text(
-                              empID == null
-                                  ? "Create New Employee"
-                                  : 'Update Employee',
-                              style: TextStyle(
-                                color: kOrangeDark,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                          validator: (value) {
+                            if (value.toString().isEmpty ||
+                                value == -1 ||
+                                value == null)
+                              return 'Please select a role';
+                            else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.settings_accessibility_sharp,
+                            ),
+                            labelText: 'Please select user role',
+                            helperText: 'Employee',
+                            hintText: 'Employee',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        DropdownButtonFormField(
+                          value: _deptController == -1
+                              ? null
+                              : _departmentsValue[_deptController - 1],
+                          items: _departmentsValue
+                              .map((String item) => DropdownMenuItem<String>(
+                                  child: Text(item), value: item))
+                              .toList(),
+                          onChanged: (String? value) {
+                            this.setState(() {
+                              _deptController = _departmentsID[
+                                  _departmentsValue.indexOf(value.toString())];
+                              // print('_deptController After: ' +
+                              //     _deptController.toString());
+                              // print('_departmentsValue[_deptController - 1]: ' +
+                              //     _departmentsValue[_deptController - 1]);
+                            });
+                          },
+                          validator: (value) {
+                            if (value.toString().isEmpty ||
+                                value == -1 ||
+                                value == null)
+                              return 'Please select a department';
+                            else
+                              return null;
+                          },
+                          // value: _departmentName,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.business_outlined,
+                            ),
+                            labelText: 'Please select a department',
+                            helperText: 'Information Technology',
+                            hintText: 'Please select a department',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: Colors.amber[800],
+                          maxLength: 25,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.name,
+                          controller: _nameController,
+                          validator: (value) {
+                            if (value!.isEmpty ||
+                                value.length < 6 ||
+                                !RegExp(r'^[a-z A-Z]+$').hasMatch(value))
+                              return 'Please enter correct name';
+                            else
+                              return null;
+                          },
+                          // autovalidate: true,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.person,
+                            ),
+                            labelText: 'Full Name',
+                            helperText: 'John Doe',
+                            hintText: 'John Doe',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: Colors.amber[800],
+                          maxLength: 30,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
+                          validator: (value) {
+                            if (value!.isEmpty ||
+                                value.length < 8 ||
+                                !RegExp(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$")
+                                    .hasMatch(value)) {
+                              return 'Please enter a valid email address!';
+                            } else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.email,
+                            ),
+                            labelText: 'Email',
+                            helperText: 'exampl@domain.com',
+                            hintText: 'exampl@domain.com',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: Colors.amber[800],
+                          maxLength: 10,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.phone,
+                          controller: _mobileController,
+                          validator: (value) {
+                            if (value!.isEmpty ||
+                                value.length < 10 ||
+                                !RegExp(r'^05\d{8}$').hasMatch(value)) {
+                              return 'Please enter a valid phone number!';
+                            } else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.phone_android,
+                            ),
+                            labelText: 'Mobile',
+                            helperText: '05xxxxxxxx',
+                            hintText: '05xxxxxxxx',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: Colors.amber[800],
+                          maxLength: 30,
+                          maxLines: 2,
+                          textInputAction: TextInputAction.send,
+                          keyboardType: TextInputType.streetAddress,
+                          controller: _addressController,
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 10) {
+                              return 'Please enter a valid address!';
+                            } else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.location_on),
+                            labelText: 'Address',
+                            helperText: '1234 Street, Riyadh, Saudi Arabia',
+                            hintText: '1234 Street, Riyadh, Saudi Arabia',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        empID == null
+                            ? Text('')
+                            : TextFormField(
+                                cursorColor: Colors.amber[800],
+                                maxLength: 30,
+                                textInputAction: TextInputAction.done,
+                                keyboardType: TextInputType.visiblePassword,
+                                controller: _passwordController,
+                                obscureText: _showPass,
+                                validator: (value) {
+                                  if (value!.isEmpty || value.length < 6) {
+                                    return 'Please enter a valid password!';
+                                  } else
+                                    return null;
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.password),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _showPass = !_showPass;
+                                      });
+                                    },
+                                    icon: _showPass
+                                        ? Icon(Icons.visibility)
+                                        : Icon(Icons.visibility_off),
+                                  ),
+                                  labelText: 'Password',
+                                  helperText: 'password',
+                                  hintText: 'password',
+                                  enabledBorder: OutlineInputBorder(),
+                                  border: OutlineInputBorder(),
+                                  focusColor: kGreenDark,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: kOrangeDark),
+                                  ),
+                                  // errorText: 'Error message',
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Card(
+                          color: Colors.grey[200],
+                          child: InkWell(
+                            onTap: () async {
+                              // Save new journal
+                              if (empID == null) {
+                                _validateForm();
+                              }
+                              if (empID != null) {
+                                await _updateEmployee(empID);
+                              }
+                              // Clear the text fields
+                              // _nameController.text = '';
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 10),
+                              child: Text(
+                                empID == null
+                                    ? "Create New Employee"
+                                    : 'Update Employee',
+                                style: TextStyle(
+                                  color: kOrangeDark,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
                               ),
                             ),
                           ),
@@ -571,8 +630,8 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

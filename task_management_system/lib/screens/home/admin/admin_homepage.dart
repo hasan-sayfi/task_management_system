@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
+import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/routes/app_routes.dart';
 import 'package:task_management_system/screens/home/admin/admin_department_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_employee_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_home_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_role_tab.dart';
+import 'package:task_management_system/utils/common_methods.dart';
 
 class AdminHomePage extends StatefulWidget {
+  // Employee employee;
+  // AdminHomePage({
+  //   required this.employee,
+  // });
   @override
   State<AdminHomePage> createState() => _AdminHomePageState();
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
+  // Employee employee;
+  // _AdminHomePageState({
+  //   required this.employee,
+  // });
   int _selectedIndex = 0;
   static List<Widget> _botBarOptions = <Widget>[
     AdminHomeTab(),
@@ -28,12 +38,13 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // print('AdminHomePage: $employee');
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
         backgroundColor: Color.fromRGBO(243, 243, 243, 1),
         elevation: 0,
-        backwardsCompatibility: false,
+        // backwardsCompatibility: false,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -47,12 +58,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              // TODO: Logout action
-              setState(() {
-                print("Refreshing!");
-              });
-            },
+            onPressed: () => goToLogin(context),
             icon: Icon(Icons.logout, size: 30),
           )
         ],
