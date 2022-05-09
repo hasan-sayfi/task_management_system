@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/routes/app_routes.dart';
 import 'package:toast/toast.dart';
+
+int selectedIndex = 0;
+Employee? loggedEmployee;
 
 Future<bool> goToLogin(BuildContext context) {
   return Navigator.of(context)
@@ -37,7 +41,7 @@ Future sendEmail(String subject, List<String> recipients, String body) async {
     print('Email sent to ($recipients)');
   } catch (e) {
     showToast('Send mail Failed!');
-    print(e);
+    print('Send mail Failed: $e');
   }
   return null;
 }
