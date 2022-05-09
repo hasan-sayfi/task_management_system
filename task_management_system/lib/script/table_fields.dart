@@ -9,6 +9,7 @@ class TableFields {
   static const empMobile = 'empMobile';
   static const empAddress = 'empAddress';
   static const empAvatar = 'empAvatar';
+  static const empPassword = 'empPassword';
   static const taskID = 'taskID';
   static const taskName = 'taskName';
   static const taskDesc = 'taskDesc';

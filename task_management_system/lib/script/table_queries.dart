@@ -23,6 +23,7 @@ class TableQueries {
         "empMobile"	TEXT,
         "empAddress"	TEXT,
         "empAvatar"	TEXT,
+        "empPassword"	TEXT,
         FOREIGN KEY("deptID") REFERENCES "Department"("deptID"),
         FOREIGN KEY("roleID") REFERENCES "Role"("roleID"),
         PRIMARY KEY("empID" AUTOINCREMENT)
@@ -38,8 +39,8 @@ class TableQueries {
         "taskEndDate"	TEXT NOT NULL,
         "taskProgress"	INTEGER NOT NULL DEFAULT 0,
         "taskStatus"	INTEGER NOT NULL DEFAULT 0,
-        "managerID"	INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY("managerID") REFERENCES "Employee"("empID"),
+        "empID"	INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY("empID") REFERENCES "Employee"("empID"),
         PRIMARY KEY("taskID" AUTOINCREMENT)
       );
       ''';
@@ -52,6 +53,15 @@ class TableQueries {
         FOREIGN KEY("empID") REFERENCES "Employee"("empID"),
         FOREIGN KEY("taskID") REFERENCES "Task"("taskID"),
         PRIMARY KEY("recID" AUTOINCREMENT)
+      );
+      ''';
+  static const userSQL = '''
+      CREATE TABLE "User" (
+        "userID"	INTEGER NOT NULL,
+        "empID"	INTEGER NOT NULL,
+        "password"	TEXT NOT NULL,
+        FOREIGN KEY("empID") REFERENCES "Employee"("empID"),
+        PRIMARY KEY("userID" AUTOINCREMENT)
       );
       ''';
 }

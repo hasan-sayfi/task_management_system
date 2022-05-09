@@ -14,7 +14,7 @@ import 'package:task_management_system/script/table_queries.dart';
 class DatabaseConnect {
   static DatabaseConnect? _databaseConnect; //Singleton DatabaseHelper
   static Database? _database; //Singleton Database
-  static const String DB_NAME = 'task_management_system1';
+  static const String DB_NAME = 'task_management_system2';
 
   // Tables Queries:
   final departmentSQL = TableQueries.departmentSQL;
@@ -22,6 +22,7 @@ class DatabaseConnect {
   final employeeSQL = TableQueries.employeeSQL;
   final taskSQL = TableQueries.taskSQL;
   final employeeTaskRecordSQL = TableQueries.employeeTaskRecordSQL;
+  final userSQL = TableQueries.userSQL;
 
   DatabaseConnect._createInstance();
 
@@ -86,6 +87,39 @@ class DatabaseConnect {
     return result;
   }
 
+  //Fetch Operation: Get all Employee objects from database as List of Employees
+  Future<List<Employee>> getAllEmployeeList() async {
+    Database? db = await this.database;
+    final List<Map<String, dynamic>> result = await db!
+        .query(TableNames.empTableName, orderBy: '${TableFields.empID}');
+    // Convert the List<Map<String, dynamic> into a List<Recipe>.
+    return List.generate(result.length, (i) {
+      // print('Generated List: ' + result[i].toString());
+      return Employee(
+        empID: result[i][TableFields.empID],
+        roleID: result[i][TableFields.roleID],
+        deptID: result[i][TableFields.deptID],
+        empName: result[i][TableFields.empName],
+        empEmail: result[i][TableFields.empEmail],
+        empMobile: result[i][TableFields.empMobile],
+        empAddress: result[i][TableFields.empAddress],
+        empPassword: result[i][TableFields.empPassword],
+      );
+    });
+  }
+
+  Future<List<Role>> getRoleList() async {
+    var roleMapList = await getRoleMapList(); //Get Map List from database
+    int count = roleMapList.length;
+
+    List<Role> roleList = <Role>[];
+    //For loop to create Task List from a Map List
+    for (int i = 0; i < count; i++) {
+      roleList.add(Role.fromMapObject(roleMapList[i]));
+    }
+    return roleList;
+  }
+
   //Fetch Operation: Get all Task objects from database
   Future<List<Map<String, dynamic>>> getTaskMapList(
     int deptID,
@@ -112,6 +146,20 @@ class DatabaseConnect {
           where: '${TableFields.deptID} = ?', whereArgs: [deptID]);
 
     return result;
+  }
+
+  //Fetch Operation: Get a Department name from database
+  Future<String> getDepartmentNameMap(int deptID) async {
+    Database? db = await this.database;
+    String sql =
+        'SELECT ${TableFields.deptName} FROM ${TableNames.deptTableName} WHERE ${TableFields.deptID} = ?';
+    var result = await db!.rawQuery(sql, ['${deptID.toString()}']);
+    if (result.length > 0) {
+      String firstResult = result.first.values.first.toString();
+      return firstResult;
+    } else {
+      return '';
+    }
   }
 
   //Fetch Operation: Get all Role objects from database
@@ -253,54 +301,16 @@ class DatabaseConnect {
     return result;
   }
 
+  //Delete Operation: Delete an Employee object in database
+  Future<int> deleteEmployee(int empID) async {
+    Database? db = await this.database;
+    var result = await db!.delete(TableNames.empTableName,
+        where: '${TableFields.empID} = ?', whereArgs: [empID]);
+
+    print('deleteEmployee: $result successfully');
+
+    return result;
+  }
+
   /* END DELETE SECTION */
-
-  Future<List<Role>> getRoleList() async {
-    var roleMapList = await getRoleMapList(); //Get Map List from database
-    int count = roleMapList.length;
-
-    List<Role> roleList = <Role>[];
-    //For loop to create Task List from a Map List
-    for (int i = 0; i < count; i++) {
-      roleList.add(Role.fromMapObject(roleMapList[i]));
-    }
-    return roleList;
-  }
-
-  // Delete function
-  Future<void> deleteTodo(Todo todo) async {
-    // Get connection to DB
-    final db = await database;
-    // Delete the todo from DB based on ID
-    await db!.delete(
-      'todo', // Table name
-      where: 'id == ?', // Where condition
-      whereArgs: [todo.id], // Args from the todo_model
-    );
-  }
-
-  // Select Function
-  Future<List<Todo>> getTodo() async {
-    // Get connection to DB
-    final db = await database;
-    // Query the DB and save the todo as list of maps
-    List<Map<String, dynamic>> items = await db!.query(
-      'todo', // Table name
-      orderBy: 'id DESC', // Order the list by descending order
-    );
-
-    // Convert the items from list of maps to list of todo
-    return List.generate(
-      items.length,
-      (index) => Todo(
-        id: items[index]['id'],
-        title: items[index]['title'],
-        creationDate: DateTime.parse(
-            items[index]['creationDate']), // Reformat from text to datetime
-        isChecked: items[index]['isChecked'] == 1
-            ? true
-            : false, // Convert int to bool
-      ),
-    );
-  }
 }
