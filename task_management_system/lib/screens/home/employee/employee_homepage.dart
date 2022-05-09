@@ -32,7 +32,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
         foregroundColor: Colors.black,
         backgroundColor: kBgColor,
         elevation: 0,
-        backwardsCompatibility: false,
+        // backwardsCompatibility: false,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
