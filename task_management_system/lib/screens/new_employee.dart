@@ -192,6 +192,7 @@ class _NewEmployeeState extends State<NewEmployee> {
         empEmail: empEmail,
         empMobile: empMobile,
         empAddress: empAddress,
+        empPassword: '123',
       );
       Navigator.pop(context, newEmp);
       // Employee.generateEmployees().add(newEmp);
