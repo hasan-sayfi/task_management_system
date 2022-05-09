@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
-import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/routes/app_routes.dart';
 import 'package:task_management_system/screens/home/admin/admin_department_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_employee_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_home_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_role_tab.dart';
-import 'package:task_management_system/utils/common_methods.dart';
+import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class AdminHomePage extends StatefulWidget {
   // Employee employee;
@@ -32,6 +31,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   void _onItemTapped(int index) {
     setState(() {
+      print('globals.loggedEmployee: ' + globals.loggedEmployee.toString());
       _selectedIndex = index;
     });
   }
@@ -42,7 +42,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
-        backgroundColor: Color.fromRGBO(243, 243, 243, 1),
+        backgroundColor: kBgColor,
         elevation: 0,
         // backwardsCompatibility: false,
         leading: Builder(
@@ -52,14 +52,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
               icon: Icon(
                 Icons.menu_sharp,
                 size: 40,
+                color: Colors.black,
               ),
             );
           },
         ),
         actions: [
           IconButton(
-            onPressed: () => goToLogin(context),
-            icon: Icon(Icons.logout, size: 30),
+            onPressed: () => globals.goToLogin(context),
+            icon: Icon(Icons.logout, size: 30, color: Colors.black),
           )
         ],
       ),

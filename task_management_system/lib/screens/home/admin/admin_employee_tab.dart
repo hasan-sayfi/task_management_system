@@ -55,7 +55,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
     final String subject = 'Account Created for ${_emailController.text}';
     final List<String> recipients = [_emailController.text];
     final String toastMessage = 'Employee Successfully Added!';
-    final String password = CreateCryptoRandomString();
+    final String password = createCryptoRandomString();
     _passwordController.text = password;
 
     final String body = '''
@@ -155,7 +155,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
 
   static final Random _random = Random.secure();
 
-  static String CreateCryptoRandomString([int length = 8]) {
+  static String createCryptoRandomString([int length = 8]) {
     var values = List<int>.generate(length, (i) => _random.nextInt(256));
 
     return base64Url.encode(values);

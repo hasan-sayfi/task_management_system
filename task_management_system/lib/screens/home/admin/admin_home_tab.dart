@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/dashboard_cards.dart';
 import 'package:task_management_system/models/database_connection.dart';
+import 'package:task_management_system/models/department.dart';
 import 'package:task_management_system/models/employee.dart';
+import 'package:task_management_system/models/role.dart';
 import 'package:task_management_system/widgets/build_dashboard_card.dart';
+import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class AdminHomeTab extends StatefulWidget {
   @override
@@ -15,16 +18,22 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
   DatabaseConnect conn = DatabaseConnect();
   static const double PROFILE_CONTAINER = 140;
   // final _employeeData = Employee.generateEmployees();
-  List<Employee> allEmployee = [];
+  List<Employee> allEmployees = [];
+  List<Department> allDepartments = [];
+  List<Role> allRoles = [];
   late List<DashboardCards> _dahsboardCardsList;
 
   Future<void> getDahsboardCardsList() async {
     var allEmployees = await conn.getAllEmployeeList();
-    var allDepartments = await conn.getDepartmentMapList(null);
-    var allRoles = await conn.getRoleMapList();
-    allEmployee = allEmployees;
+    var allDepartments = await conn.getDepartmentList();
+    var allRoles = await conn.getRoleList();
+    this.allEmployees = allEmployees;
+    this.allDepartments = allDepartments;
+    this.allRoles = allRoles;
+    // print(
+    //     '#Employee: ${allEmployees.length}, #Department: ${allDepartments.length}, #Roles: ${allRoles.length}');
     print(
-        '#Employee: ${allEmployees.length}, #Department: ${allDepartments.length}, #Roles: ${allRoles.length}');
+        'allRoles: ${allRoles[2 - 1].roleName}; allDepartments: ${allDepartments[2 - 1].deptName}');
     var _dahsboardCardsList = [
       DashboardCards(
         iconData: Icons.groups,
@@ -91,7 +100,7 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
                                     fontSize: 30,
                                     color: kFontBodyColor,
                                   )),
-                              Text("John!", // TODO: Replace First Name
+                              Text(globals.loggedEmployee!.empName,
                                   style: TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold)),
@@ -101,9 +110,11 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text("Manager, ", // TODO: Replace Role Name
+                              Text(
+                                  "${allRoles[globals.loggedEmployee!.roleID - 1].roleName}, ",
                                   style: TextStyle(color: kFontBodyColor)),
-                              Text("IT Department", // TODO: Replace Department
+                              Text(
+                                  "${allDepartments[globals.loggedEmployee!.deptID - 1].deptName} Department",
                                   style: TextStyle(color: kFontBodyColor)),
                             ],
                           ),
@@ -116,11 +127,9 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
                       child: CircleAvatar(
                         radius: 45,
                         backgroundImage: AssetImage(
-                          allEmployee[0].empAvatar == null
-                              ? 'assets/avatars/img2.png'
-                              : allEmployee[0]
-                                  .empAvatar!, // TODO: Replace with avatar image
-                        ),
+                            globals.loggedEmployee?.empAvatar == null
+                                ? 'assets/avatars/img2.png'
+                                : globals.loggedEmployee!.empAvatar!),
                       ),
                     ),
                   ],

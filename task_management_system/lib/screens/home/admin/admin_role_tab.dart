@@ -312,14 +312,4 @@ class _AdminRoleTabState extends State<AdminRoleTab> {
       );
     }
   } //_save()
-
-  // Refresh inficator
-  Future<void> _refresh() async {
-    return await Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        // _allEmployees = Employee.getEmployeesInDepartment(2);
-        _AdminRoleTabState();
-      });
-    });
-  }
 }
