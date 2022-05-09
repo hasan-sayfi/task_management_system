@@ -1,5 +1,6 @@
 class AppRoutes {
   static const HOME = '/';
+  static const LOGIN_PAGE = '/loginPage';
   static const MANAGER_HOME = '/managerHome';
   static const HOME_EMPLOYEE = '/homeEmployee';
   static const NEW_TASK = '/newTask';
