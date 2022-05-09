@@ -36,7 +36,7 @@ class BuildDashboardCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: Text(
-                dashboardCard.title!,
+                dashboardCard.title,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

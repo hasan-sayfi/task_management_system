@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 
 class DashboardCards {
-  IconData? iconData;
-  String? title;
-  int? total;
-  Color? bgColor;
-  Color? btnColor;
-  Color? iconColor;
+  IconData iconData;
+  String title;
+  int total;
+  Color bgColor;
+  Color btnColor;
+  Color iconColor;
 
   DashboardCards({
-    this.iconData,
-    this.title,
-    this.total,
-    this.bgColor,
-    this.btnColor,
-    this.iconColor,
+    required this.iconData,
+    required this.title,
+    required this.total,
+    required this.bgColor,
+    required this.btnColor,
+    required this.iconColor,
   });
 
   static List<DashboardCards> generateDashboardCards() {
