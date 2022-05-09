@@ -4,7 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart'; // sqflite for database
 import 'package:task_management_system/models/department.dart';
 import 'package:task_management_system/models/employee.dart';
-import 'package:task_management_system/models/models_test/todo_model.dart';
 import 'package:task_management_system/models/role.dart';
 import 'package:task_management_system/models/task.dart';
 import 'package:task_management_system/script/table_fields.dart';
@@ -87,7 +86,7 @@ class DatabaseConnect {
     return result;
   }
 
-  //Fetch Operation: Get all Employee objects from database as List of Employees
+  //Fetch Operation: convert Employee map objects to List of Employees
   Future<List<Employee>> getAllEmployeeList() async {
     Database? db = await this.database;
     final List<Map<String, dynamic>> result = await db!
@@ -106,18 +105,6 @@ class DatabaseConnect {
         empPassword: result[i][TableFields.empPassword],
       );
     });
-  }
-
-  Future<List<Role>> getRoleList() async {
-    var roleMapList = await getRoleMapList(); //Get Map List from database
-    int count = roleMapList.length;
-
-    List<Role> roleList = <Role>[];
-    //For loop to create Task List from a Map List
-    for (int i = 0; i < count; i++) {
-      roleList.add(Role.fromMapObject(roleMapList[i]));
-    }
-    return roleList;
   }
 
   //Fetch Operation: Get all Task objects from database
@@ -148,6 +135,20 @@ class DatabaseConnect {
     return result;
   }
 
+  //Fetch Operation: convert Role map objects to List of Roles
+  Future<List<Department>> getDepartmentList() async {
+    var departmentMapList =
+        await getDepartmentMapList(null); //Get Map List from database
+    int count = departmentMapList.length;
+
+    List<Department> departmentList = <Department>[];
+    //For loop to create Task List from a Map List
+    for (int i = 0; i < count; i++) {
+      departmentList.add(Department.fromMapObject(departmentMapList[i]));
+    }
+    return departmentList;
+  }
+
   //Fetch Operation: Get a Department name from database
   Future<String> getDepartmentNameMap(int deptID) async {
     Database? db = await this.database;
@@ -168,6 +169,19 @@ class DatabaseConnect {
     //var result = db.rawQuery('SELECT * FROM $taskTable order by $colDate, $colTime ASC');
     var result = db!.query(TableNames.roleTableName);
     return result;
+  }
+
+  //Fetch Operation: convert Role map objects to List of Roles
+  Future<List<Role>> getRoleList() async {
+    var roleMapList = await getRoleMapList(); //Get Map List from database
+    int count = roleMapList.length;
+
+    List<Role> roleList = <Role>[];
+    //For loop to create Task List from a Map List
+    for (int i = 0; i < count; i++) {
+      roleList.add(Role.fromMapObject(roleMapList[i]));
+    }
+    return roleList;
   }
   /* END SELECT SECTION */
 
