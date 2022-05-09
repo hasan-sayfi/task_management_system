@@ -4,6 +4,7 @@ import 'package:task_management_system/routes/app_routes.dart';
 import 'package:task_management_system/screens/home/manager/manager_task_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_employee_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_home_tab.dart';
+import 'package:task_management_system/utils/common_methods.dart';
 
 class ManagerHomePage extends StatefulWidget {
   @override
@@ -45,12 +46,7 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              // TODO: Logout action
-              setState(() {
-                print("Refreshing!");
-              });
-            },
+            onPressed: () => goToLogin(context),
             icon: Icon(Icons.logout, size: 30),
           )
         ],
