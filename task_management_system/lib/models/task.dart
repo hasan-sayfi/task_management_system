@@ -1,13 +1,14 @@
 class Task {
   int? taskID;
-  final String taskName; // Header for task
-  final String taskDesc; // Any description to help understand the task
-  String? taskComment; // If there are any comment about the task
-  DateTime taskStartDate; // Start date for the task
-  DateTime taskEndDate; // Deadline for the task
-  int taskProgress; // percentage of task completion
-  bool taskStatus; // status of task: in-progress (false) or finished (true)
-  int empID;
+  late String taskName; // Header for task
+  late String taskDesc; // Any description to help understand the task
+  late String? taskComment; // If there are any comment about the task
+  late DateTime taskStartDate; // Start date for the task
+  late DateTime taskEndDate; // Deadline for the task
+  late int taskProgress; // percentage of task completion
+  late bool
+      taskStatus; // status of task: in-progress (false) or finished (true)
+  late int empID; // employee task FK
 
   Task({
     this.taskID,
@@ -27,12 +28,25 @@ class Task {
       'taskName': taskName,
       'taskDesc': taskDesc,
       'taskComment': taskComment,
-      'taskStartDate': taskStartDate.toString(),
-      'taskEndDate': taskEndDate.toString(),
+      'taskStartDate': taskStartDate.toIso8601String(),
+      'taskEndDate': taskEndDate.toIso8601String(),
       'taskProgress': taskProgress,
       'taskStatus': taskStatus ? 1 : 0,
       'empID': empID,
     };
+  }
+
+  //Extract Task object from MAP object
+  Task.fromMapObject(Map<String, dynamic> map) {
+    this.taskID = map['taskID'];
+    this.taskName = map['taskName'];
+    this.taskDesc = map['taskDesc'];
+    this.taskComment = map['taskComment'];
+    this.taskStartDate = DateTime.parse(map['taskStartDate'] as String);
+    this.taskEndDate = DateTime.parse(map['taskEndDate'] as String);
+    this.taskProgress = map['taskProgress'];
+    this.taskStatus = map['taskStatus'] == 1;
+    this.empID = map['empID'];
   }
 
   // This is for debuggin only
