@@ -5,6 +5,7 @@ import 'package:task_management_system/models/database_connection.dart';
 import 'package:task_management_system/models/department.dart';
 import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/models/role.dart';
+import 'package:task_management_system/models/task.dart';
 import 'package:task_management_system/widgets/build_dashboard_card.dart';
 import 'package:task_management_system/utils/common_methods.dart' as globals;
 
@@ -20,32 +21,40 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
   List<Employee> allEmployees = [];
   List<Department> allDepartments = [];
   List<Role> allRoles = [];
-  late List<DashboardCards> _dahsboardCardsList;
+  List<Task> allTasks = [];
+  List<Task> finishedTasks = [];
+  List<DashboardCards> _dahsboardCardsList = [];
   static const double PROFILE_CONTAINER = 140;
 
   Future<void> getDahsboardCardsList() async {
-    var allEmployees = await conn.getAllEmployeeList();
+    var allEmployees = await conn.getEmployeeList(null);
     var allDepartments = await conn.getDepartmentList();
     var allRoles = await conn.getRoleList();
+    var allTasks = await conn.getTaskList(globals.loggedEmployee!.deptID);
+    var finishedTasks =
+        allTasks.where((task) => task.taskStatus == true).toList();
+    print('allTasks: $allTasks');
+    print('----------------');
+    print('finishedTasks: $finishedTasks');
     this.allEmployees = allEmployees
-        .where((emp) => emp.deptID == globals.loggedEmployee!.deptID)
+        .where((emp) =>
+            emp.deptID == globals.loggedEmployee!.deptID && emp.roleID != 2)
         .toList();
     this.allDepartments = allDepartments;
     this.allRoles = allRoles;
-    print('this.allEmployees ${this.allEmployees}');
     var _dahsboardCardsList = [
       DashboardCards(
         iconData: Icons.groups,
         title: 'Employees',
-        total: allEmployees.length,
+        total: this.allEmployees.length,
         bgColor: kYellowLight,
         btnColor: kYellow,
         iconColor: kYellowDark,
       ),
       DashboardCards(
-        iconData: Icons.business,
+        iconData: Icons.task,
         title: 'Tasks',
-        total: 0,
+        total: allTasks.length,
         bgColor: kBlueLight,
         btnColor: kBlue,
         iconColor: kBlueDark,
@@ -53,7 +62,7 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
       DashboardCards(
         iconData: Icons.add_task,
         title: 'Finished Tasks',
-        total: 0,
+        total: finishedTasks.length,
         bgColor: kGreenLight,
         btnColor: kGreen,
         iconColor: kGreenDark,
@@ -63,11 +72,24 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
         title: "Remaining Tasks",
         bgColor: kRedLight,
         btnColor: kRed,
-        total: 0,
+        total: allTasks.length - finishedTasks.length,
         iconColor: kRedDark,
       ),
     ];
     this._dahsboardCardsList = _dahsboardCardsList;
+  }
+
+  String _getDepartment(String deptName) {
+    var deptNameList = deptName.split(' '); //[Human, Resources] -> length = 2
+    String shortenName = '';
+    if (deptName.length > 10 && deptNameList.length > 0) {
+      for (var name in deptNameList) {
+        shortenName += name.substring(0, 1).toUpperCase();
+      }
+    } else {
+      shortenName = deptName;
+    }
+    return shortenName + ' Department';
   }
 
   @override
@@ -107,7 +129,11 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
                                       fontSize: 30,
                                       color: kFontBodyColor,
                                     )),
-                                Text("John!", // TODO: Replace First Name
+                                Text(
+                                    globals.loggedEmployee!.empName
+                                            .split(' ')
+                                            .first +
+                                        '!',
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold)),
@@ -117,10 +143,13 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("Manager, ", // TODO: Replace Role Name
+                                Text(
+                                    "${allRoles[globals.loggedEmployee!.roleID - 1].roleName}, ",
                                     style: TextStyle(color: kFontBodyColor)),
                                 Text(
-                                    "IT Department", // TODO: Replace Department
+                                    _getDepartment(allDepartments[
+                                            globals.loggedEmployee!.deptID - 1]
+                                        .deptName),
                                     style: TextStyle(color: kFontBodyColor)),
                               ],
                             ),

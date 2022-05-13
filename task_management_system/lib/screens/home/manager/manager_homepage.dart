@@ -13,7 +13,7 @@ class ManagerHomePage extends StatefulWidget {
 
 class _ManagerHomePageState extends State<ManagerHomePage> {
   int _selectedIndex = 0;
-  static const List<Widget> _botBarOptions = <Widget>[
+  static List<Widget> _botBarOptions = <Widget>[
     ManagerHomeTab(),
     ManagerEmployeeTab(),
     ManagerTaskTab(),
