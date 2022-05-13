@@ -72,7 +72,6 @@ class DatabaseConnect {
   //Fetch Operation: Get all Employee objects from database
   Future<List<Map<String, dynamic>>> getEmployeeMapList(int? deptID) async {
     Database? db = await this.database;
-    //var result = db.rawQuery('SELECT * FROM $taskTable order by $colDate, $colTime ASC');
     var result;
     if (deptID == null) {
       result =
@@ -87,44 +86,56 @@ class DatabaseConnect {
   }
 
   //Fetch Operation: convert Employee map objects to List of Employees
-  Future<List<Employee>> getAllEmployeeList() async {
-    Database? db = await this.database;
-    final List<Map<String, dynamic>> result = await db!
-        .query(TableNames.empTableName, orderBy: '${TableFields.empID}');
-    // Convert the List<Map<String, dynamic> into a List<Recipe>.
-    return List.generate(result.length, (i) {
-      // print('Generated List: ' + result[i].toString());
-      return Employee(
-        empID: result[i][TableFields.empID],
-        roleID: result[i][TableFields.roleID],
-        deptID: result[i][TableFields.deptID],
-        empName: result[i][TableFields.empName],
-        empEmail: result[i][TableFields.empEmail],
-        empMobile: result[i][TableFields.empMobile],
-        empAddress: result[i][TableFields.empAddress],
-        empPassword: result[i][TableFields.empPassword],
-      );
-    });
+  Future<List<Employee>> getEmployeeList(int? deptID) async {
+    var employeeMapList;
+    int count;
+    List<Employee> employeeList = <Employee>[];
+
+    if (deptID == null) {
+      employeeMapList =
+          await getEmployeeMapList(null); //Get Map List from database
+      count = employeeMapList.length;
+      //For loop to create Task List from a Map List
+      for (int i = 0; i < count; i++) {
+        employeeList.add(Employee.fromMapObject(employeeMapList[i]));
+      }
+    } else {
+      employeeMapList =
+          await getEmployeeMapList(deptID); //Get Map List from database
+      count = employeeMapList.length;
+      //For loop to create Task List from a Map List
+      for (int i = 0; i < count; i++) {
+        employeeList.add(Employee.fromMapObject(employeeMapList[i]));
+      }
+    }
+    return employeeList;
   }
 
   //Fetch Operation: Get all Task objects from database
-  Future<List<Map<String, dynamic>>> getTaskMapList(
-    int deptID,
-  ) async {
+  Future<List<Map<String, dynamic>>> getTaskMapList(int deptID) async {
     Database? db = await this.database;
     var result = db!.rawQuery(
-        'SELECT * FROM ${TableNames.taskTableName} t WHERE t.empID IN (SELECT e.empID FROM Employee e WHERE e.deptID = $deptID)');
-    /* var result = db!.query(TableNames.taskTableName,
-        where: '${TableFields.empID} = ?',
-        whereArgs: [empID],
-        orderBy: '${TableFields.taskStartDate}'); */
+        'SELECT * FROM ${TableNames.taskTableName} t WHERE t.empID IN (SELECT e.empID FROM Employee e WHERE e.${TableFields.deptID} = ?)',
+        [deptID]);
     return result;
+  }
+
+  //Fetch Operation: convert Task map objects to List of Tasks
+  Future<List<Task>> getTaskList(int deptID) async {
+    var taskMapList = await getTaskMapList(deptID); //Get Map List from database
+    int count = taskMapList.length;
+
+    List<Task> taskList = <Task>[];
+    //For loop to create Task List from a Map List
+    for (int i = 0; i < count; i++) {
+      taskList.add(Task.fromMapObject(taskMapList[i]));
+    }
+    return taskList;
   }
 
   //Fetch Operation: Get all Department objects from database
   Future<List<Map<String, dynamic>>> getDepartmentMapList(int? deptID) async {
     Database? db = await this.database;
-    //var result = db.rawQuery('SELECT * FROM $taskTable order by $colDate, $colTime ASC');
     var result;
     if (deptID == null)
       result = db!.query(TableNames.deptTableName);
@@ -135,14 +146,14 @@ class DatabaseConnect {
     return result;
   }
 
-  //Fetch Operation: convert Role map objects to List of Roles
+  //Fetch Operation: convert Department map objects to List of Departments
   Future<List<Department>> getDepartmentList() async {
     var departmentMapList =
         await getDepartmentMapList(null); //Get Map List from database
     int count = departmentMapList.length;
 
     List<Department> departmentList = <Department>[];
-    //For loop to create Task List from a Map List
+    //For loop to create Department List from a Map List
     for (int i = 0; i < count; i++) {
       departmentList.add(Department.fromMapObject(departmentMapList[i]));
     }
@@ -177,7 +188,7 @@ class DatabaseConnect {
     int count = roleMapList.length;
 
     List<Role> roleList = <Role>[];
-    //For loop to create Task List from a Map List
+    //For loop to create Role List from a Map List
     for (int i = 0; i < count; i++) {
       roleList.add(Role.fromMapObject(roleMapList[i]));
     }
@@ -256,6 +267,19 @@ class DatabaseConnect {
 
     return result;
   }
+
+  //Update Operation: Update a Task object to database
+  Future<int> updateTask(Task task) async {
+    Database? db = await this.database;
+    var result = await db!.update(
+      TableNames.taskTableName, task.toMap(),
+      where: '${TableFields.taskID} = ?', whereArgs: [task.taskID],
+      conflictAlgorithm:
+          ConflictAlgorithm.replace, // This helps to replace the dublicates
+    );
+
+    return result;
+  }
   /* END UPDATE SECTION */
 
   /* START DELETE SECTION */
@@ -322,6 +346,28 @@ class DatabaseConnect {
         where: '${TableFields.empID} = ?', whereArgs: [empID]);
 
     print('deleteEmployee: $result successfully');
+
+    return result;
+  }
+
+  //Delete Operation: Delete a Task object in database
+  Future<int> deleteTask(int taskID) async {
+    Database? db = await this.database;
+    var result = await db!.delete(TableNames.taskTableName,
+        where: '${TableFields.taskID} = ?', whereArgs: [taskID]);
+
+    print('delete Task: $result successfully');
+
+    return result;
+  }
+
+  //Delete Operation: Delete a Task object in database
+  Future<int> deleteAllTasks() async {
+    Database? db = await this.database;
+    var result = await db!
+        .delete(TableNames.taskTableName, where: '${TableFields.taskID}');
+
+    print('delete Task: $result successfully');
 
     return result;
   }
