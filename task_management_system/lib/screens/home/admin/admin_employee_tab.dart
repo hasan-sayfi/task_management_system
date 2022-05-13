@@ -16,8 +16,6 @@ class AdminEmployeeTab extends StatefulWidget {
 }
 
 class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
-  // List<Employee> employees = Employee.getEmployeesInDepartment(null);
-
   DatabaseConnect conn = DatabaseConnect();
   var _formKey = GlobalKey<FormState>();
   int _roleController = -1;
@@ -200,7 +198,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
+                      mainAxisSpacing: 15,
                       childAspectRatio: 1.9,
                     ),
                     itemBuilder: (BuildContext context, int index) {

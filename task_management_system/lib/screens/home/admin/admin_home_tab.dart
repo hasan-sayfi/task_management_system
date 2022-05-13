@@ -24,7 +24,7 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
   late List<DashboardCards> _dahsboardCardsList;
 
   Future<void> getDahsboardCardsList() async {
-    var allEmployees = await conn.getAllEmployeeList();
+    var allEmployees = await conn.getEmployeeList(null);
     var allDepartments = await conn.getDepartmentList();
     var allRoles = await conn.getRoleList();
     this.allEmployees = allEmployees;

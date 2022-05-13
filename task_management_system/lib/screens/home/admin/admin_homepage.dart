@@ -8,19 +8,11 @@ import 'package:task_management_system/screens/home/admin/admin_role_tab.dart';
 import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class AdminHomePage extends StatefulWidget {
-  // Employee employee;
-  // AdminHomePage({
-  //   required this.employee,
-  // });
   @override
   State<AdminHomePage> createState() => _AdminHomePageState();
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  // Employee employee;
-  // _AdminHomePageState({
-  //   required this.employee,
-  // });
   int _selectedIndex = 0;
   static List<Widget> _botBarOptions = <Widget>[
     AdminHomeTab(),
