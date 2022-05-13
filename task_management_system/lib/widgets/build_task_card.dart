@@ -20,88 +20,75 @@ class BuildTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: task.taskStatus ? kGreenLight : Colors.grey[300],
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: EdgeInsets.only(left: 10, top: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        task.taskName,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0,
-                            color: Colors.grey[700]),
-                      ),
-                      SizedBox(height: SPACE_BETWEEN_CONTENT),
-                      Text(
-                        task.taskDesc,
-                        style: TextStyle(
-                            fontSize: FONT_SIZE, color: Colors.grey[700]),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: SPACE_BETWEEN_CONTENT),
-                    ],
+    return Container(
+      decoration: BoxDecoration(
+        color: task.taskStatus ? kGreenLight : Colors.grey[300],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.only(left: 10, top: 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.only(top: 5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    task.taskName,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0,
+                        color: Colors.grey[700]),
                   ),
-                ),
+                  SizedBox(height: SPACE_BETWEEN_CONTENT),
+                  Text(
+                    task.taskDesc,
+                    style:
+                        TextStyle(fontSize: FONT_SIZE, color: Colors.grey[700]),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: SPACE_BETWEEN_CONTENT),
+                ],
               ),
-              SizedBox(height: 10),
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Card(
-                    color: Colors.grey[200],
-                    child: Container(
-                      width: 150,
-                      height: 60,
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextButton(
-                        onPressed: () {
-                          _modalBottomSheet(context);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "More Details",
-                              style: TextStyle(
-                                  color: kOrangeDark,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Icon(Icons.expand_more),
-                          ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Card(
+                color: Colors.grey[200],
+                child: Container(
+                  width: 150,
+                  height: 60,
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextButton(
+                    onPressed: () {
+                      _modalBottomSheet(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "More Details",
+                          style: TextStyle(
+                              color: kOrangeDark, fontWeight: FontWeight.bold),
                         ),
-                      ),
+                        Icon(Icons.expand_more),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.edit),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -117,12 +104,13 @@ class BuildTaskCard extends StatelessWidget {
       backgroundColor: Colors.grey[300],
       builder: (BuildContext context) {
         return Container(
-          height: 300,
+          // height: 300,
           padding: EdgeInsets.all(20),
           // color: Colors.amber,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 task.taskName,
@@ -143,88 +131,84 @@ class BuildTaskCard extends StatelessWidget {
                 style: TextStyle(
                     fontSize: FONT_SIZE_DESC, color: Colors.grey[700]),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Card(
-                    elevation: 8,
-                    color: Colors.grey[200],
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            'Start Date: ',
-                            style: TextStyle(
-                              fontSize: FONT_SIZE,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          // SizedBox(width: 5),
-                          Column(
-                            children: [
-                              Text(
-                                DateFormat('dd MMM yyyy')
-                                    .format(task.taskStartDate),
-                                style: TextStyle(
-                                  fontSize: FONT_SIZE_DATE,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              Text(
-                                DateFormat('hh:mm a').format(task.taskEndDate),
-                                style: TextStyle(
-                                  fontSize: FONT_SIZE_DATE,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+              Card(
+                elevation: 8,
+                color: Colors.grey[200],
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        'Start Date: ',
+                        style: TextStyle(
+                          fontSize: FONT_SIZE,
+                          color: Colors.grey[700],
+                        ),
                       ),
-                    ),
-                  ),
-                  Card(
-                    elevation: 8,
-                    color: Colors.grey[200],
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
+                      // SizedBox(width: 5),
+                      Column(
                         children: [
                           Text(
-                            'End Date: ',
+                            DateFormat('dd MMM yyyy')
+                                .format(task.taskStartDate),
                             style: TextStyle(
                               fontSize: FONT_SIZE_DATE,
                               color: Colors.grey[700],
                             ),
                           ),
-                          // SizedBox(width: 10),
-                          Column(
-                            children: [
-                              Text(
-                                DateFormat('dd MMM yyyy')
-                                    .format(task.taskEndDate),
-                                style: TextStyle(
-                                  fontSize: FONT_SIZE_DATE,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              Text(
-                                DateFormat('hh:mm a').format(task.taskEndDate),
-                                style: TextStyle(
-                                  fontSize: FONT_SIZE_DATE,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ],
+                          Text(
+                            DateFormat('hh:mm a').format(task.taskEndDate),
+                            style: TextStyle(
+                              fontSize: FONT_SIZE_DATE,
+                              color: Colors.grey[700],
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
+              Card(
+                elevation: 8,
+                color: Colors.grey[200],
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        'End Date: ',
+                        style: TextStyle(
+                          fontSize: FONT_SIZE_DATE,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      // SizedBox(width: 10),
+                      Column(
+                        children: [
+                          Text(
+                            DateFormat('dd MMM yyyy').format(task.taskEndDate),
+                            style: TextStyle(
+                              fontSize: FONT_SIZE_DATE,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            DateFormat('hh:mm a').format(task.taskEndDate),
+                            style: TextStyle(
+                              fontSize: FONT_SIZE_DATE,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
