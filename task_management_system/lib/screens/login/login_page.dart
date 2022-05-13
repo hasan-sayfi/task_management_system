@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
   DatabaseConnect conn = DatabaseConnect();
   late Employee employee;
   Future<List<Employee>> _getUser() async {
-    final employees = await conn.getAllEmployeeList();
+    final employees = await conn.getEmployeeList(null);
     employees.forEach((employee) {
       // print('Employee: ' + employee.empPassword.toString());
       print('Email: ${employee.empEmail}, Password: ${employee.empPassword}');

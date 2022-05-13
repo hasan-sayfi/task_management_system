@@ -13,7 +13,7 @@ class EmployeeHomePage extends StatefulWidget {
 
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
   int _selectedIndex = 0;
-  static const List<Widget> _botBarOptions = <Widget>[
+  static List<Widget> _botBarOptions = <Widget>[
     ManagerHomeTab(),
     ManagerEmployeeTab(),
     ManagerTaskTab(),
