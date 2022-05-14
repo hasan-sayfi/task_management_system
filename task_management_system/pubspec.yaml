@@ -17,15 +17,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  sqflite: ^2.0.2
-  path: ^1.8.0
+  sqflite: ^2.0.2 #mobile sqlite database
+  path: ^1.8.0  #find path inside mobile directory
   intl: ^0.17.0 #for dates
-  expandable_text: ^2.2.0
-  path_provider: ^2.0.4
-  mailer: ^5.1.1
-  toast: ^0.3.0
-  flutter_login: ^3.2.0
-  shared_preferences: ^2.0.13
+  expandable_text: ^2.2.0 #for text widget with extra features
+  path_provider: ^2.0.4 #similar to path but with more features
+  mailer: ^5.1.1  #smtp (mail) package
+  toast: ^0.3.0 #to show notification and status updates
+  flutter_login: ^3.2.0 #package to easily control the login and authintaction
+  shared_preferences: ^2.0.13 #save variables in local device
+  rolling_switch: ^0.0.2 #swtich but with extra features
+  syncfusion_flutter_sliders: ^20.1.55 #slider but with extra features
 
 dev_dependencies:
   flutter_test:
