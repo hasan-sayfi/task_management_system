@@ -22,6 +22,7 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
   List<Department> allDepartments = [];
   List<Role> allRoles = [];
   late List<DashboardCards> _dahsboardCardsList;
+  Employee? employeeAccount;
 
   Future<void> getDahsboardCardsList() async {
     var allEmployees = await conn.getEmployeeList(null);
@@ -30,6 +31,8 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
     this.allEmployees = allEmployees;
     this.allDepartments = allDepartments;
     this.allRoles = allRoles;
+    employeeAccount = allEmployees
+        .firstWhere((emp) => emp.empID == globals.loggedEmployee!.empID);
     // print(
     //     '#Employee: ${allEmployees.length}, #Department: ${allDepartments.length}, #Roles: ${allRoles.length}');
     print(
@@ -61,6 +64,12 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
       ),
     ];
     this._dahsboardCardsList = _dahsboardCardsList;
+  }
+
+  @override
+  void initState() {
+    getDahsboardCardsList();
+    super.initState();
   }
 
   @override
@@ -100,7 +109,7 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
                                     fontSize: 30,
                                     color: kFontBodyColor,
                                   )),
-                              Text(globals.loggedEmployee!.empName,
+                              Text(employeeAccount!.empName,
                                   style: TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold)),
@@ -111,10 +120,10 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                  "${allRoles[globals.loggedEmployee!.roleID - 1].roleName}, ",
+                                  "${allRoles[employeeAccount!.roleID - 1].roleName}, ",
                                   style: TextStyle(color: kFontBodyColor)),
                               Text(
-                                  "${allDepartments[globals.loggedEmployee!.deptID - 1].deptName} Department",
+                                  "${allDepartments[employeeAccount!.deptID - 1].deptName} Department",
                                   style: TextStyle(color: kFontBodyColor)),
                             ],
                           ),

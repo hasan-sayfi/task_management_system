@@ -5,6 +5,7 @@ import 'package:task_management_system/screens/home/admin/admin_department_tab.d
 import 'package:task_management_system/screens/home/admin/admin_employee_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_home_tab.dart';
 import 'package:task_management_system/screens/home/admin/admin_role_tab.dart';
+import 'package:task_management_system/screens/home/profile_tab.dart';
 import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class AdminHomePage extends StatefulWidget {
@@ -19,6 +20,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     AdminEmployeeTab(),
     AdminDepartmentTab(),
     AdminRoleTab(),
+    ProfileTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -30,7 +32,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // print('AdminHomePage: $employee');
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -57,12 +58,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: kBgColor,
         elevation: 3,
-        unselectedItemColor: kFontBodyColor,
-        unselectedLabelStyle: TextStyle(color: kFontBodyColor),
-        // showSelectedLabels: true,
-        showUnselectedLabels: true,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -80,6 +78,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
             icon: Icon(Icons.settings_accessibility),
             label: 'Roles',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: kDefaultColor,
@@ -93,32 +95,58 @@ class _AdminHomePageState extends State<AdminHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: kDefaultColor,
+                image: DecorationImage(
+                    scale: 1.5,
+                    image: AssetImage(
+                        globals.loggedEmployee!.empAvatar.toString())),
               ),
-              child: Text('Drawer Header'),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                clipBehavior: Clip.hardEdge,
+                // child:
+                //     Image.asset(globals.loggedEmployee!.empAvatar.toString()),
+                // AssetImage(
+                //   globals.loggedEmployee!.empAvatar.toString(),
+                // ),
+              ),
             ),
             ListTile(
-              title: const Text('Admin'),
+              leading: Icon(Icons.person),
+              title: const Text(
+                'Profile',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.ADMIN_HOME);
-                // setState(() {
-                //   _selectedIndex = 1;
-                // });
-                // Navigator.pop(context);
+                _onItemTapped(4);
               },
             ),
             ListTile(
-              title: const Text('Manager'),
+              leading: Icon(Icons.settings),
+              title: const Text(
+                'Settings',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.MANAGER_HOME);
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                // Navigator.pop(context);
+                // Navigator.pushNamed(context, AppRoutes.MANAGER_HOME);
+              },
+            ),
+            SizedBox(
+              height: 600,
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text(
+                'Logout',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                globals.goToLogin(context);
               },
             ),
           ],

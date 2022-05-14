@@ -239,9 +239,6 @@ class _AdminRoleTabState extends State<AdminRoleTab> {
       title: Text('Delete this role?'),
       content: Text('Are you sure you want to delete this role?'),
       actions: [
-        // ElevatedButton(onPressed: () {}, child: Text('Cancel')),
-        // ElevatedButton(onPressed: () {}, child: Text('Delete')),
-        // ElevatedButton(onPressed: () {}, child: Text('Delete All Roles')),
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
           child: Text('Cancel'),

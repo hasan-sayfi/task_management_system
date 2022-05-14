@@ -25,15 +25,15 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
   TextEditingController _mobileController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  var _showPass;
-  List<Map<String, dynamic>> _employees = [];
+  var _isHidden;
+  List<Employee> _employees = [];
   bool _isLoading = true;
   int count = 0;
-  static const double SIZE_BETWEEN_TEXT_FIELDS = 15;
+  static const double SIZE_BETWEEN_TEXT_FIELDS = 12;
 
   // This function is used to fetch all data from the database
   void _refreshEmployees() async {
-    final data = await conn.getEmployeeMapList(null);
+    final data = await conn.getEmployeeList(null);
     setState(() {
       _employees = data;
       _isLoading = false;
@@ -146,7 +146,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
   @override
   void initState() {
     super.initState();
-    _showPass = false;
+    _isHidden = true;
     ToastContext().init(context);
     _refreshEmployees(); // Loading the employees when the app starts
   }
@@ -170,7 +170,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
       ),
       body: Container(
         padding: EdgeInsets.all(15),
-        height: 520,
+        height: 780,
         child: _isLoading
             ? Center(
                 child: Column(
@@ -199,7 +199,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
-                      childAspectRatio: 1.9,
+                      childAspectRatio: 2.5,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(
@@ -228,12 +228,10 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                               ],
                               onSelected: (value) => value == 1
                                   ? {
-                                      _showForm(
-                                          _employees[index][TableFields.empID]),
+                                      _showForm(_employees[index].empID),
                                     }
                                   : {
-                                      _deleteEmployee(
-                                          _employees[index][TableFields.empID]),
+                                      _deleteEmployee(_employees[index].empID!),
                                     },
                             ),
                           ),
@@ -284,15 +282,15 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
     if (empID != null) {
       // id == null -> create new item
       // id != null -> update an existing item
-      final existingEmployee = _employees
-          .firstWhere((element) => element[TableFields.empID] == empID);
-      _roleController = existingEmployee[TableFields.roleID];
-      _deptController = existingEmployee[TableFields.deptID];
-      _nameController.text = existingEmployee[TableFields.empName];
-      _emailController.text = existingEmployee[TableFields.empEmail];
-      _mobileController.text = existingEmployee[TableFields.empMobile];
-      _addressController.text = existingEmployee[TableFields.empAddress];
-      _passwordController.text = existingEmployee[TableFields.empPassword];
+      final existingEmployee =
+          _employees.firstWhere((element) => element.empID == empID);
+      _roleController = existingEmployee.roleID;
+      _deptController = existingEmployee.deptID;
+      _nameController.text = existingEmployee.empName;
+      _emailController.text = existingEmployee.empEmail;
+      _mobileController.text = existingEmployee.empMobile;
+      _addressController.text = existingEmployee.empAddress;
+      _passwordController.text = existingEmployee.empPassword;
     } else {
       _roleController = -1;
       _deptController = -1;
@@ -316,12 +314,12 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
         return StatefulBuilder(
           builder: (context, setState) => Container(
             padding: EdgeInsets.all(20),
-            height: 700,
+            // height: 700,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisSize: MainAxisSize.max,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Form(
                     key: _formKey,
@@ -522,7 +520,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                         TextFormField(
                           cursorColor: Colors.amber[800],
                           maxLength: 30,
-                          maxLines: 2,
+                          maxLines: 1,
                           textInputAction: TextInputAction.send,
                           keyboardType: TextInputType.streetAddress,
                           controller: _addressController,
@@ -555,7 +553,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.visiblePassword,
                                 controller: _passwordController,
-                                obscureText: _showPass,
+                                obscureText: _isHidden,
                                 validator: (value) {
                                   if (value!.isEmpty || value.length < 6) {
                                     return 'Please enter a valid password!';
@@ -567,10 +565,10 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() {
-                                        _showPass = !_showPass;
+                                        _isHidden = !_isHidden;
                                       });
                                     },
-                                    icon: _showPass
+                                    icon: _isHidden
                                         ? Icon(Icons.visibility)
                                         : Icon(Icons.visibility_off),
                                   ),
