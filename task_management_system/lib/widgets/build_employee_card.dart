@@ -70,7 +70,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(left: 10, top: 5),
+              padding: const EdgeInsets.only(left: 5, top: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -47,6 +47,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
   int count = 0;
   static const double SIZE_BETWEEN_TEXT_FIELDS = 12;
   bool _isTaskFiltered = false;
+  var size,height,width;
 
   // This function is used to fetch all data from the database
   void _refreshTasks() async {
@@ -82,6 +83,10 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
 
   @override
   Widget build(BuildContext context) {
+    // getting the size of the window
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     ToastContext().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -109,7 +114,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
                 ),
               )
             : Container(
-                height: 800,
+                height: height * 0.8,
                 padding: EdgeInsets.all(10),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
@@ -183,7 +188,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
                             ),
                           )
                         : Container(
-                            height: 680,
+                            height: height * 0.65,
                             child: GridView.builder(
                               itemCount: filteredTasks.length,
                               gridDelegate:
@@ -191,7 +196,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
                                 crossAxisCount: 1,
                                 // crossAxisSpacing: 10,
                                 mainAxisSpacing: 20,
-                                childAspectRatio: 1.8,
+                                childAspectRatio: height * 0.0018,
                               ),
                               itemBuilder: (BuildContext context, int index) {
                                 return Stack(
@@ -376,6 +381,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
     // print('_employees:wtf ${_employees} ');
     // log('globals.loggedEmployee!.deptID: ${globals.loggedEmployee!.deptID}');
     // log('_employees: ${_employees} ');
+    _employees = _employees.where((emp) => emp.roleID == 3).toList();
     _employees.forEach((emp) {
       _employeesID.add(emp.empID!);
       _employeesValue.add(emp.empName);

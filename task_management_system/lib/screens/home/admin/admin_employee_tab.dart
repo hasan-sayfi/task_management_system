@@ -199,7 +199,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
-                      childAspectRatio: 2.5,
+                      childAspectRatio: 2.0,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(

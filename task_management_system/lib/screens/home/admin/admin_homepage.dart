@@ -15,6 +15,7 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   int _selectedIndex = 0;
+  var size,height,width;
   static List<Widget> _botBarOptions = <Widget>[
     AdminHomeTab(),
     AdminEmployeeTab(),
@@ -32,6 +33,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // getting the size of the window
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -136,7 +141,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             SizedBox(
-              height: 600,
+              height: height/2,
             ),
             ListTile(
               leading: Icon(Icons.logout),

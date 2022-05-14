@@ -32,6 +32,7 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
   bool _isLoading = true;
   int count = 0;
   static const double SIZE_BETWEEN_TEXT_FIELDS = 15;
+  var size, height, width;
 
   @override
   void initState() {
@@ -90,6 +91,10 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
 
   @override
   Widget build(BuildContext context) {
+// getting the size of the window
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     ToastContext().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -129,7 +134,7 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
-                      childAspectRatio: 2.5,
+                      childAspectRatio: height  * 0.0025,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(
@@ -216,7 +221,7 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
         await conn.getEmployeeList(globals.loggedEmployee!.deptID);
     // print('empMapList: $empMapList');
     setState(() {
-      _employees = empMapList;
+      _employees = empMapList.where((emp) => emp.roleID == 3).toList();
       _isLoading = false;
     });
   }
