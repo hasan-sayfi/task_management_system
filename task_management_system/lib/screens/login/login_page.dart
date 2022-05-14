@@ -9,11 +9,6 @@ import 'package:task_management_system/screens/home/manager/manager_homepage.dar
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_management_system/utils/common_methods.dart' as globals;
 
-const users = const {
-  't@t.com': '123',
-  'hsayfi@gmail.com': '112233',
-};
-
 class LoginPage extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2000);
   DatabaseConnect conn = DatabaseConnect();
@@ -58,15 +53,15 @@ class LoginPage extends StatelessWidget {
     });
   }
 
-  Future<String?> _recoverPassword(String name) {
-    debugPrint('Name: $name');
-    return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(name)) {
-        return 'User not exists';
-      }
-      return null;
-    });
-  }
+  // Future<String?> _recoverPassword(String name) {
+  //   debugPrint('Name: $name');
+  //   return Future.delayed(loginTime).then((_) {
+  //     if (!users.containsKey(name)) {
+  //       return 'User not exists';
+  //     }
+  //     return null;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +95,11 @@ class LoginPage extends StatelessWidget {
           },
         ));
       },
-      onRecoverPassword: _recoverPassword,
-      hideForgotPasswordButton: true,
+      // onRecoverPassword: _recoverPassword,
+      onRecoverPassword: (_) {
+        return;
+      },
+      hideForgotPasswordButton: false,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:task_management_system/models/employee.dart';
 import 'package:task_management_system/routes/app_routes.dart';
 import 'package:toast/toast.dart';

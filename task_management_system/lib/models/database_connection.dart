@@ -78,8 +78,8 @@ class DatabaseConnect {
           db!.query(TableNames.empTableName, orderBy: '${TableFields.empID}');
     } else {
       result = db!.query(TableNames.empTableName,
-          where: '${TableFields.deptID} = ? and ${TableFields.roleID} = ?',
-          whereArgs: [deptID, 3],
+          where: '${TableFields.deptID} = ?',
+          whereArgs: [deptID],
           orderBy: '${TableFields.empID}');
     }
     return result;
