@@ -20,74 +20,196 @@ class BuildTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: task.taskStatus ? kGreenLight : Colors.grey[300],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: EdgeInsets.only(left: 10, top: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.only(top: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    task.taskName,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0,
-                        color: Colors.grey[700]),
-                  ),
-                  SizedBox(height: SPACE_BETWEEN_CONTENT),
-                  Text(
-                    task.taskDesc,
-                    style:
-                        TextStyle(fontSize: FONT_SIZE, color: Colors.grey[700]),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: SPACE_BETWEEN_CONTENT),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Card(
-                color: Colors.grey[200],
-                child: Container(
-                  width: 150,
-                  height: 60,
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextButton(
-                    onPressed: () {
-                      _modalBottomSheet(context);
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "More Details",
-                          style: TextStyle(
-                              color: kOrangeDark, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        _modalBottomSheet(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: task.taskStatus ? kGreenLight : Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: EdgeInsets.only(left: 10, top: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.only(top: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text(
+                      task.taskName,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0,
+                          color: Colors.grey[700]),
+                    ),
+                    SizedBox(height: SPACE_BETWEEN_CONTENT),
+                    // ExpandableText(
+                    //   task.taskDesc,
+                    //   expandText: '',
+                    //   maxLines: 1,
+                    //   expandOnTextTap: true,
+                    //   expanded: false,
+                    //   collapseOnTextTap: true,
+                    //   onExpandedChanged: (_) {
+                    //     _modalBottomSheet(context);
+                    //   },
+                    //   style:
+                    //       TextStyle(fontSize: FONT_SIZE, color: Colors.grey[700]),
+                    // ),
+                    Container(
+                      width: 350,
+                      child: Row(
+                        children: [
+                          Text(
+                            task.taskDesc.substring(0, 30) + '... ',
+                            maxLines: 1,
+                            // overflow: TextOverflow.ellipsis,
+                            // softWrap: true,
+                            style: TextStyle(
+                                fontSize: FONT_SIZE, color: Colors.grey[700]),
+                          ),
+                          Text(
+                            'show more',
+                            style: TextStyle(
+                                fontSize: FONT_SIZE, color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: SPACE_BETWEEN_CONTENT),
+                    Card(
+                      elevation: 8,
+                      color: Colors.grey[200],
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              'Start Date: ',
+                              style: TextStyle(
+                                fontSize: FONT_SIZE,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            // SizedBox(width: 5),
+                            Column(
+                              children: [
+                                Text(
+                                  DateFormat('dd MMM yyyy')
+                                      .format(task.taskStartDate),
+                                  style: TextStyle(
+                                    fontSize: FONT_SIZE_DATE,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('hh:mm a')
+                                      .format(task.taskEndDate),
+                                  style: TextStyle(
+                                    fontSize: FONT_SIZE_DATE,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Icon(Icons.expand_more),
+                      ),
+                    ),
+                    Card(
+                      elevation: 8,
+                      color: Colors.grey[200],
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              'End Date: ',
+                              style: TextStyle(
+                                fontSize: FONT_SIZE_DATE,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            // SizedBox(width: 10),
+                            Column(
+                              children: [
+                                Text(
+                                  DateFormat('dd MMM yyyy')
+                                      .format(task.taskEndDate),
+                                  style: TextStyle(
+                                    fontSize: FONT_SIZE_DATE,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('hh:mm a')
+                                      .format(task.taskEndDate),
+                                  style: TextStyle(
+                                    fontSize: FONT_SIZE_DATE,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Card(
+                            color: Colors.grey[200],
+                            child: Container(
+                              // color: Colors.transparent,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 38, vertical: 15),
+                              child: Text(
+                                "Status: ${task.taskStatus ? 'Complete' : 'Pending'}",
+                                style: TextStyle(
+                                    color: kOrangeDark,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Card(
+                            color: Colors.grey[200],
+                            child: Container(
+                              // color: Colors.transparent,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 15),
+                              child: Text(
+                                "Progress: %${task.taskProgress}",
+                                style: TextStyle(
+                                    color: kOrangeDark,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+            SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
@@ -120,17 +242,22 @@ class BuildTaskCard extends StatelessWidget {
                     letterSpacing: 0,
                     color: Colors.grey[700]),
               ),
-              ExpandableText(
+              Text(
                 task.taskDesc,
-                expandText: 'show more',
-                collapseText: 'show less',
-                animation: true,
-                animationDuration: Duration(seconds: 1),
-                maxLines: 2,
-                linkColor: Colors.blue,
                 style: TextStyle(
                     fontSize: FONT_SIZE_DESC, color: Colors.grey[700]),
               ),
+              // ExpandableText(
+              //   task.taskDesc,
+              //   expandText: 'show more',
+              //   collapseText: 'show less',
+              //   animation: true,
+              //   animationDuration: Duration(seconds: 1),
+              //   maxLines: 2,
+              //   linkColor: Colors.blue,
+              //   style: TextStyle(
+              //       fontSize: FONT_SIZE_DESC, color: Colors.grey[700]),
+              // ),
               Card(
                 elevation: 8,
                 color: Colors.grey[200],
@@ -208,6 +335,27 @@ class BuildTaskCard extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
+              task.taskComment == null || task.taskComment!.length == 0
+                  ? SizedBox()
+                  : Container(
+                      width: 450,
+                      height: 100,
+                      child: Card(
+                        elevation: 8,
+                        color: Colors.grey[200],
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                            'Comment: ' + task.taskComment.toString(),
+                            style: TextStyle(
+                              fontSize: FONT_SIZE_DATE,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/database_connection.dart';
+import 'package:task_management_system/models/employee.dart';
+import 'package:task_management_system/models/task.dart';
 import 'package:task_management_system/script/table_fields.dart';
+import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class BuildEmployeeCard extends StatefulWidget {
   final BuildContext context;
-  final Map<String, dynamic> employee;
+  final Employee employee;
   static const double SPACE_BETWEEN_CONTENT = 4;
   static const double FONT_SIZE = 15;
 
@@ -21,9 +24,30 @@ class BuildEmployeeCard extends StatefulWidget {
 class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
   DatabaseConnect conn = DatabaseConnect();
   String _deptName = '';
+  int remainingTasks = 0;
+  int finishedTasks = 0;
 
-  Future<void> getDepartmentName() async {
-    final int deptID = widget.employee[TableFields.deptID];
+  getDepartmentName() async {
+    final int deptID = widget.employee.deptID;
+    final data = await conn.getDepartmentNameMap(deptID);
+
+    _deptName = data;
+  }
+
+  Future<void> getEmployeeInfo() async {
+    var allTasks = await conn.getTaskList(globals.loggedEmployee!.deptID);
+    remainingTasks = allTasks
+        .where((task) =>
+            task.taskStatus == false && task.empID == widget.employee.empID)
+        .toList()
+        .length;
+    finishedTasks = allTasks
+        .where((task) =>
+            task.taskStatus == true && task.empID == widget.employee.empID)
+        .toList()
+        .length;
+
+    int deptID = widget.employee.deptID;
     final data = await conn.getDepartmentNameMap(deptID);
 
     _deptName = data;
@@ -32,7 +56,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getDepartmentName(),
+      future: getEmployeeInfo(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return Text(ConnectionState.done.toString());
@@ -57,10 +81,9 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                       CircleAvatar(
                         radius: 30,
                         backgroundImage: AssetImage(
-                          (widget.employee[TableFields.empAvatar] == null)
+                          (widget.employee.empAvatar == null)
                               ? "assets/avatars/img2.png"
-                              : widget.employee[TableFields
-                                  .empAvatar]!, // TODO: Replace with avatar image
+                              : widget.employee.empAvatar!,
                         ),
                       ),
                       SizedBox(width: 20),
@@ -74,7 +97,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                             Row(
                               children: [
                                 Text(
-                                  widget.employee[TableFields.empName],
+                                  widget.employee.empName,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -82,8 +105,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                                       color: Colors.grey[700]),
                                 ),
                                 Text(
-                                  ' (${widget.employee[TableFields.roleID] == 1 ? "Adminitrator" : widget.employee[TableFields.roleID] == 2 ? "Manager" : "Employee"})',
-                                  // ' (${employee[TableFields.roleID]})',
+                                  ' (${widget.employee.roleID == 1 ? "Adminitrator" : widget.employee.roleID == 2 ? "Manager" : "Employee"})',
                                   style: TextStyle(
                                       fontSize: BuildEmployeeCard.FONT_SIZE,
                                       // fontWeight: FontWeight.bold,
@@ -107,7 +129,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                                 height:
                                     BuildEmployeeCard.SPACE_BETWEEN_CONTENT),
                             Text(
-                              widget.employee[TableFields.empEmail],
+                              widget.employee.empEmail,
                               style: TextStyle(
                                   fontSize: BuildEmployeeCard.FONT_SIZE,
                                   // fontWeight: FontWeight.bold,
@@ -118,7 +140,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                                 height:
                                     BuildEmployeeCard.SPACE_BETWEEN_CONTENT),
                             Text(
-                              widget.employee[TableFields.empMobile],
+                              widget.employee.empMobile,
                               style: TextStyle(
                                   fontSize: BuildEmployeeCard.FONT_SIZE,
                                   // fontWeight: FontWeight.bold,
@@ -129,7 +151,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                                 height:
                                     BuildEmployeeCard.SPACE_BETWEEN_CONTENT),
                             Text(
-                              widget.employee[TableFields.empAddress],
+                              widget.employee.empAddress,
                               style: TextStyle(
                                   fontSize: BuildEmployeeCard.FONT_SIZE,
                                   // fontWeight: FontWeight.bold,
@@ -155,7 +177,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                             // color: Colors.transparent,
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
-                              "Finished Tasks: 6",
+                              "Finished Tasks: $finishedTasks",
                               style: TextStyle(
                                   color: kYellowDark,
                                   fontWeight: FontWeight.bold),
@@ -172,7 +194,7 @@ class _BuildEmployeeCardState extends State<BuildEmployeeCard> {
                             // color: Colors.transparent,
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
-                              "Remaining Tasks: 6",
+                              "Remaining Tasks: $remainingTasks",
                               style: TextStyle(
                                   color: kYellowDark,
                                   fontWeight: FontWeight.bold),
