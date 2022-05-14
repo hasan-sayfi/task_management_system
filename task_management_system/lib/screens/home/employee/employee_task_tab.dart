@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rolling_switch/rolling_switch.dart';
@@ -30,6 +32,8 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
   List<Task> allTasks = [];
   List<Task> finishedTasks = [];
   List<Task> filteredTasks = [];
+  late Employee managerAccount;
+  late Employee employeeAccount;
   Task? editedTask;
   late DateTime startDate;
   late DateTime endDate;
@@ -59,7 +63,12 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
     filteredTasks = filteredTasks
         .where((task) => task.empID == widget.allTasks.first.empID)
         .toList();
-
+    var allEmployees =
+        await conn.getEmployeeList(globals.loggedEmployee!.deptID);
+    log('allEmployees: $allEmployees');
+    managerAccount = allEmployees.firstWhere((emp) => emp.roleID == 2);
+    employeeAccount = allEmployees
+        .firstWhere((emp) => emp.empID == widget.allTasks.first.empID);
     setState(() {
       // filteredTasks = widget.allTasks;
       this.allTasks = filteredTasks;
@@ -68,9 +77,6 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
 
       _isLoading = false;
     });
-    print('this.allTasks: ${this.allTasks}');
-    print('this.finishedTasks: ${this.finishedTasks}');
-    print('filteredTasks: ${this.filteredTasks}');
   }
 
   Future<void> _validateForm() async {
@@ -224,7 +230,7 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
                                             value: 1,
                                           ),
                                           PopupMenuItem(
-                                            child: Text("Delete"),
+                                            child: Text("Submit Task"),
                                             value: 2,
                                           ),
                                         ],
@@ -234,12 +240,8 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
                                                     .taskID),
                                               }
                                             : {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (_) =>
-                                                        _showAlertDialog(
-                                                            filteredTasks[index]
-                                                                .taskID!)),
+                                                _submitTask(
+                                                    filteredTasks[index]),
                                               },
                                       ),
                                     ),
@@ -253,6 +255,38 @@ class _EmployeeTaskTabState extends State<EmployeeTaskTab> {
               ),
       ),
     );
+  }
+
+  void _submitTask(Task currentTask) async {
+    if (currentTask.taskStatus) {
+      globals.showToast('Task already submitted!');
+      return;
+    }
+    String subject = 'Task ${currentTask.taskName} has been submitted!';
+    List<String> recipients = [managerAccount.empEmail];
+    String body = '''
+(${employeeAccount.empName}) has submitted the following task:
+    Task Name: ${currentTask.taskName}
+    Task Desc: ${currentTask.taskDesc}
+    ''';
+
+    Task task = Task(
+      taskID: currentTask.taskID,
+      empID: currentTask.empID,
+      taskName: currentTask.taskName,
+      taskDesc: currentTask.taskDesc,
+      taskComment: currentTask.taskComment,
+      taskStartDate: currentTask.taskStartDate,
+      taskEndDate: currentTask.taskEndDate,
+      taskProgress: 100,
+      taskStatus: true,
+    );
+    print('_submitTask: $task');
+    await conn.updateTask(task);
+    globals.sendEmail(subject, recipients, body);
+    globals.showToast('Task Successfully submitted!');
+
+    _refreshTasks();
   }
 
   // Insert a new Employee to the database
