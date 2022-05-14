@@ -10,8 +10,6 @@ import 'package:task_management_system/widgets/build_dashboard_card.dart';
 import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class ManagerHomeTab extends StatefulWidget {
-  const ManagerHomeTab({Key? key}) : super(key: key);
-
   @override
   State<ManagerHomeTab> createState() => _ManagerHomeTabState();
 }
@@ -19,6 +17,7 @@ class ManagerHomeTab extends StatefulWidget {
 class _ManagerHomeTabState extends State<ManagerHomeTab> {
   DatabaseConnect conn = DatabaseConnect();
   List<Employee> allEmployees = [];
+  late Employee employeeAccount;
   List<Department> allDepartments = [];
   List<Role> allRoles = [];
   List<Task> allTasks = [];
@@ -33,15 +32,14 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
     var allTasks = await conn.getTaskList(globals.loggedEmployee!.deptID);
     var finishedTasks =
         allTasks.where((task) => task.taskStatus == true).toList();
-    print('allTasks: $allTasks');
-    print('----------------');
-    print('finishedTasks: $finishedTasks');
     this.allEmployees = allEmployees
         .where((emp) =>
             emp.deptID == globals.loggedEmployee!.deptID && emp.roleID != 2)
         .toList();
     this.allDepartments = allDepartments;
     this.allRoles = allRoles;
+    employeeAccount = allEmployees
+        .firstWhere((emp) => emp.empID == globals.loggedEmployee!.empID);
     var _dahsboardCardsList = [
       DashboardCards(
         iconData: Icons.groups,
@@ -130,9 +128,7 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
                                       color: kFontBodyColor,
                                     )),
                                 Text(
-                                    globals.loggedEmployee!.empName
-                                            .split(' ')
-                                            .first +
+                                    employeeAccount.empName.split(' ').first +
                                         '!',
                                     style: TextStyle(
                                         fontSize: 30,
@@ -144,11 +140,11 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                    "${allRoles[globals.loggedEmployee!.roleID - 1].roleName}, ",
+                                    "${allRoles[employeeAccount.roleID - 1].roleName}, ",
                                     style: TextStyle(color: kFontBodyColor)),
                                 Text(
                                     _getDepartment(allDepartments[
-                                            globals.loggedEmployee!.deptID - 1]
+                                            employeeAccount.deptID - 1]
                                         .deptName),
                                     style: TextStyle(color: kFontBodyColor)),
                               ],
@@ -162,9 +158,9 @@ class _ManagerHomeTabState extends State<ManagerHomeTab> {
                         child: CircleAvatar(
                           radius: 45,
                           backgroundImage: AssetImage(
-                              globals.loggedEmployee?.empAvatar == null
+                              employeeAccount.empAvatar == null
                                   ? 'assets/avatars/img2.png'
-                                  : globals.loggedEmployee!.empAvatar!),
+                                  : employeeAccount.empAvatar!),
                         ),
                       ),
                     ],

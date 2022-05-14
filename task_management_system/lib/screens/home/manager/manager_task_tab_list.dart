@@ -66,7 +66,7 @@ class _ManagerTaskTabListState extends State<ManagerTaskTabList> {
                             // onPressed: _showForm(widget.allTasks[index].taskID),
                             onPressed: () {
                               setState(() {
-                                globals.editedTask = widget.allTasks[index];
+                                // globals.editedTask = widget.allTasks[index];
                               });
                             },
                             icon: Icon(Icons.edit),

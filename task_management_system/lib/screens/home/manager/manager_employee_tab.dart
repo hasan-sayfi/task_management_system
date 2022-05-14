@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/database_connection.dart';
 import 'package:task_management_system/models/employee.dart';
@@ -26,15 +28,192 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
   TextEditingController _addressController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   var _concealPass;
-  List<Map<String, dynamic>> _employees = [];
+  List<Employee> _employees = [];
   bool _isLoading = true;
   int count = 0;
   static const double SIZE_BETWEEN_TEXT_FIELDS = 15;
 
+  @override
+  void initState() {
+    super.initState();
+    _concealPass = true;
+    ToastContext().init(context);
+    _refreshEmployees(); // Loading the employees when the app starts
+  }
+
+  static final Random _random = Random.secure();
+
+  static String createCryptoRandomString([int length = 8]) {
+    var values = List<int>.generate(length, (i) => _random.nextInt(256));
+
+    return base64Url.encode(values);
+  }
+
+  Widget _showAlertDialog(int empID) {
+    return AlertDialog(
+      title: Text('Delete this Employee?'),
+      content: Text('All tasks related to this employee will be deleted too?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            _deleteEmployee(empID);
+            Navigator.pop(context);
+          },
+          child: Text('Delete'),
+        ),
+      ],
+    );
+  }
+
+  _sendEmail(String empEmail) async {
+    String email = 'task.management.smtp@gmail.com';
+    String password = r'Lt@mjVf&$6GM';
+    String emailName = 'Task Management';
+    final smtpServer = gmail(email, password);
+
+    final message = Message()
+      ..from = Address(empEmail, emailName)
+      ..recipients = [empEmail]
+      ..subject = 'Test Subject'
+      ..text = 'Something to rememebr by!';
+    try {
+      await send(message, smtpServer);
+      print('Email sent to ($empEmail)');
+    } catch (e) {
+      print('Send mail Failed: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ToastContext().init(context);
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: kBgColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showForm(null),
+        child: Icon(Icons.add),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(15),
+        height: 780,
+        child: _isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(
+                      'No Employees added yet!',
+                      style: TextStyle(fontSize: 24, color: kOrange),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                        height: 200,
+                        child: Image.asset(
+                          'assets/background/waiting.png',
+                          fit: BoxFit.cover,
+                        )),
+                  ],
+                ),
+              )
+            : _employees.isNotEmpty
+                ? GridView.builder(
+                    itemCount: _employees.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      // crossAxisSpacing: 10,
+                      mainAxisSpacing: 15,
+                      childAspectRatio: 2.5,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          BuildEmployeeCard(
+                            context: context,
+                            employee: _employees[index],
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 20,
+                            child: PopupMenuButton(
+                                child: Center(
+                                  child: Icon(Icons.edit),
+                                ),
+                                itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        child: Text("Edit"),
+                                        value: 1,
+                                      ),
+                                      PopupMenuItem(
+                                        child: Text("Delete"),
+                                        value: 2,
+                                      ),
+                                      PopupMenuItem(
+                                        child: Text("Send Email"),
+                                        value: 3,
+                                      ),
+                                    ],
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 1:
+                                      _showForm(_employees[index].empID);
+                                      print('_showForm called!');
+                                      break;
+                                    case 2:
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) => _showAlertDialog(
+                                              _employees[index].empID!));
+                                      print('_showAlertDialog called!');
+                                      break;
+                                    case 3:
+                                      _sendEmail(_employees[index].empEmail);
+                                      print('Send Email called!');
+                                      break;
+                                    default:
+                                      print('Default Case');
+                                  }
+                                }),
+                          ),
+                        ],
+                      );
+                    },
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Text(
+                          'No Employees added yet!',
+                          style: TextStyle(fontSize: 24, color: kOrange),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                            height: 200,
+                            child: Image.asset(
+                              'assets/background/waiting.png',
+                              fit: BoxFit.cover,
+                            )),
+                      ],
+                    ),
+                  ),
+      ),
+    );
+  }
+
   // This function is used to fetch all data from the database
   void _refreshEmployees() async {
     final empMapList =
-        await conn.getEmployeeMapList(globals.loggedEmployee!.deptID);
+        await conn.getEmployeeList(globals.loggedEmployee!.deptID);
     // print('empMapList: $empMapList');
     setState(() {
       _employees = empMapList;
@@ -67,8 +246,8 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
     ''';
 
     Employee employee = Employee(
-      roleID: _roleController,
-      deptID: _deptController,
+      roleID: 3,
+      deptID: globals.loggedEmployee!.deptID,
       empName: _nameController.text,
       empEmail: _emailController.text,
       empMobile: _mobileController.text,
@@ -128,7 +307,7 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
   }
 
   // Delete an existing Employee
-  Future<void> _deleteEmployee(int empID) async {
+  void _deleteEmployee(int empID) async {
     await conn.deleteEmployee(empID);
     _roleController = 3;
     _deptController = globals.loggedEmployee!.deptID;
@@ -143,128 +322,6 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
     globals.showToast('Employee Successfully delete!');
 
     _refreshEmployees();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _concealPass = true;
-    ToastContext().init(context);
-    _refreshEmployees(); // Loading the employees when the app starts
-  }
-
-  static final Random _random = Random.secure();
-
-  static String createCryptoRandomString([int length = 8]) {
-    var values = List<int>.generate(length, (i) => _random.nextInt(256));
-
-    return base64Url.encode(values);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ToastContext().init(context);
-    return Scaffold(
-      backgroundColor: kBgColor,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showForm(null),
-        child: Icon(Icons.add),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(15),
-        height: 520,
-        child: _isLoading
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Text(
-                      'No Employees added yet!',
-                      style: TextStyle(fontSize: 24, color: kOrange),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                        height: 200,
-                        child: Image.asset(
-                          'assets/background/waiting.png',
-                          fit: BoxFit.cover,
-                        )),
-                  ],
-                ),
-              )
-            : _employees.isNotEmpty
-                ? GridView.builder(
-                    itemCount: _employees.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1,
-                      // crossAxisSpacing: 10,
-                      mainAxisSpacing: 15,
-                      childAspectRatio: 1.9,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          BuildEmployeeCard(
-                            context: context,
-                            employee: _employees[index],
-                          ),
-                          Positioned(
-                            top: 10,
-                            right: 20,
-                            child: PopupMenuButton(
-                              child: Center(
-                                child: Icon(Icons.edit),
-                              ),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  child: Text("Edit"),
-                                  value: 1,
-                                ),
-                                PopupMenuItem(
-                                  child: Text("Delete"),
-                                  value: 2,
-                                ),
-                              ],
-                              onSelected: (value) => value == 1
-                                  ? {
-                                      _showForm(
-                                          _employees[index][TableFields.empID]),
-                                    }
-                                  : {
-                                      _deleteEmployee(
-                                          _employees[index][TableFields.empID]),
-                                    },
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Text(
-                          'No Employees added yet!',
-                          style: TextStyle(fontSize: 24, color: kOrange),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                            height: 200,
-                            child: Image.asset(
-                              'assets/background/waiting.png',
-                              fit: BoxFit.cover,
-                            )),
-                      ],
-                    ),
-                  ),
-      ),
-    );
   }
 
   void _showForm(int? empID) async {
@@ -286,15 +343,15 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
     if (empID != null) {
       // id == null -> create new item
       // id != null -> update an existing item
-      final existingEmployee = _employees
-          .firstWhere((element) => element[TableFields.empID] == empID);
-      _roleController = existingEmployee[TableFields.roleID];
-      _deptController = existingEmployee[TableFields.deptID];
-      _nameController.text = existingEmployee[TableFields.empName];
-      _emailController.text = existingEmployee[TableFields.empEmail];
-      _mobileController.text = existingEmployee[TableFields.empMobile];
-      _addressController.text = existingEmployee[TableFields.empAddress];
-      _passwordController.text = existingEmployee[TableFields.empPassword];
+      final existingEmployee =
+          _employees.firstWhere((emp) => emp.empID == empID);
+      _roleController = existingEmployee.roleID;
+      _deptController = existingEmployee.deptID;
+      _nameController.text = existingEmployee.empName;
+      _emailController.text = existingEmployee.empEmail;
+      _mobileController.text = existingEmployee.empMobile;
+      _addressController.text = existingEmployee.empAddress;
+      _passwordController.text = existingEmployee.empPassword;
     } else {
       _roleController = -1;
       _deptController = -1;
@@ -318,12 +375,12 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
         return StatefulBuilder(
           builder: (context, setState) => Container(
             padding: EdgeInsets.all(20),
-            height: 700,
+            // height: 700,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisSize: MainAxisSize.max,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Form(
                     key: _formKey,
@@ -429,7 +486,16 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
                           cursorColor: Colors.amber[800],
                           maxLength: 30,
                           maxLines: 2,
-                          textInputAction: TextInputAction.send,
+                          textInputAction: TextInputAction.go,
+                          onFieldSubmitted: (_) async {
+                            // Validate form then create
+                            if (empID == null) {
+                              _validateForm();
+                            }
+                            if (empID != null) {
+                              await _updateEmployee(empID);
+                            }
+                          },
                           keyboardType: TextInputType.streetAddress,
                           controller: _addressController,
                           validator: (value) {
@@ -505,15 +571,13 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
                           color: Colors.grey[200],
                           child: InkWell(
                             onTap: () async {
-                              // Save new journal
+                              // Validate form then create
                               if (empID == null) {
                                 _validateForm();
                               }
                               if (empID != null) {
                                 await _updateEmployee(empID);
                               }
-                              // Clear the text fields
-                              // _nameController.text = '';
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(

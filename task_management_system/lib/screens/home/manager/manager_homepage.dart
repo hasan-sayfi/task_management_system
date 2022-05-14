@@ -1,10 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/routes/app_routes.dart';
 import 'package:task_management_system/screens/home/manager/manager_task_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_employee_tab.dart';
 import 'package:task_management_system/screens/home/manager/manager_home_tab.dart';
-import 'package:task_management_system/utils/common_methods.dart';
+import 'package:task_management_system/screens/home/profile_tab.dart';
+import 'package:task_management_system/utils/common_methods.dart' as globals;
 
 class ManagerHomePage extends StatefulWidget {
   @override
@@ -17,6 +20,7 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
     ManagerHomeTab(),
     ManagerEmployeeTab(),
     ManagerTaskTab(),
+    ProfileTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -32,7 +36,6 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
         foregroundColor: Colors.black,
         backgroundColor: kBgColor,
         elevation: 0,
-        backwardsCompatibility: false,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -46,12 +49,13 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () => goToLogin(context),
+            onPressed: () => globals.goToLogin(context),
             icon: Icon(Icons.logout, size: 30),
           )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: kBgColor,
         elevation: 3,
         items: [
@@ -67,6 +71,10 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
             icon: Icon(Icons.checklist),
             label: 'Tasks',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: kDefaultColor,
@@ -80,24 +88,58 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: kDefaultColor,
+                image: DecorationImage(
+                    scale: 1.5,
+                    image: AssetImage(
+                        globals.loggedEmployee!.empAvatar.toString())),
               ),
-              child: Text('Drawer Header'),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                clipBehavior: Clip.hardEdge,
+                // child:
+                //     Image.asset(globals.loggedEmployee!.empAvatar.toString()),
+                // AssetImage(
+                //   globals.loggedEmployee!.empAvatar.toString(),
+                // ),
+              ),
             ),
             ListTile(
-              title: const Text('Admin'),
+              leading: Icon(Icons.person),
+              title: const Text(
+                'Profile',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.ADMIN_HOME);
+                _onItemTapped(3);
               },
             ),
             ListTile(
-              title: const Text('Manager'),
+              leading: Icon(Icons.settings),
+              title: const Text(
+                'Settings',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.MANAGER_HOME);
+                // Navigator.pushNamed(context, AppRoutes.MANAGER_HOME);
+              },
+            ),
+            SizedBox(
+              height: 600,
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text(
+                'Logout',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                globals.goToLogin(context);
               },
             ),
           ],
