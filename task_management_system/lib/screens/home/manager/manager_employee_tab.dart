@@ -134,7 +134,7 @@ class _ManagerEmployeeTabState extends State<ManagerEmployeeTab> {
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
-                      childAspectRatio: height  * 0.0025,
+                      childAspectRatio: height * 0.0024,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(

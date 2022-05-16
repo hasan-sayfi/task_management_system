@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:task_management_system/constants/colors.dart';
 import 'package:task_management_system/models/database_connection.dart';
 import 'package:task_management_system/models/employee.dart';
-import 'package:task_management_system/script/table_fields.dart';
 import 'package:task_management_system/utils/common_methods.dart';
 import 'package:task_management_system/widgets/build_employee_card.dart';
 import 'package:toast/toast.dart';
@@ -29,7 +28,8 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
   List<Employee> _employees = [];
   bool _isLoading = true;
   int count = 0;
-  static const double SIZE_BETWEEN_TEXT_FIELDS = 12;
+  static const double SIZE_BETWEEN_TEXT_FIELDS = 15;
+  var size, height, width;
 
   // This function is used to fetch all data from the database
   void _refreshEmployees() async {
@@ -159,9 +159,33 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
     return base64Url.encode(values);
   }
 
+  Widget _showAlertDialog(int empID) {
+    return AlertDialog(
+      title: Text('Delete this Employee?'),
+      content: Text('All tasks related to this employee will be deleted too?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            _deleteEmployee(empID);
+            Navigator.pop(context);
+          },
+          child: Text('Delete'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ToastContext().init(context);
+// getting the size of the window
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return Scaffold(
       backgroundColor: kBgColor,
       floatingActionButton: FloatingActionButton(
@@ -199,7 +223,7 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                       crossAxisCount: 1,
                       // crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
-                      childAspectRatio: 2.0,
+                      childAspectRatio: height * 0.0024,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return Stack(
@@ -231,7 +255,10 @@ class _AdminEmployeeTabState extends State<AdminEmployeeTab> {
                                       _showForm(_employees[index].empID),
                                     }
                                   : {
-                                      _deleteEmployee(_employees[index].empID!),
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) => _showAlertDialog(
+                                              _employees[index].empID!)),
                                     },
                             ),
                           ),

@@ -20,6 +20,9 @@ class BuildTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
+    var width = size.width;
     return InkWell(
       onTap: () {
         _modalBottomSheet(context);
@@ -50,36 +53,28 @@ class BuildTaskCard extends StatelessWidget {
                           color: Colors.grey[700]),
                     ),
                     SizedBox(height: SPACE_BETWEEN_CONTENT),
-                    // ExpandableText(
-                    //   task.taskDesc,
-                    //   expandText: '',
-                    //   maxLines: 1,
-                    //   expandOnTextTap: true,
-                    //   expanded: false,
-                    //   collapseOnTextTap: true,
-                    //   onExpandedChanged: (_) {
-                    //     _modalBottomSheet(context);
-                    //   },
-                    //   style:
-                    //       TextStyle(fontSize: FONT_SIZE, color: Colors.grey[700]),
-                    // ),
                     Container(
-                      width: 350,
+                      width: width,
                       child: Row(
                         children: [
-                          Text(
-                            task.taskDesc.substring(0, 30) + '... ',
-                            maxLines: 1,
-                            // overflow: TextOverflow.ellipsis,
-                            // softWrap: true,
-                            style: TextStyle(
-                                fontSize: FONT_SIZE, color: Colors.grey[700]),
+                          Container(
+                            width: width / 1.5,
+                            child: Text(
+                              task.taskDesc,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              // softWrap: true,
+                              style: TextStyle(
+                                  fontSize: FONT_SIZE, color: Colors.grey[700]),
+                            ),
                           ),
-                          Text(
-                            'show more',
-                            style: TextStyle(
-                                fontSize: FONT_SIZE, color: Colors.blue),
-                          ),
+                          task.taskDesc.length > 40
+                              ? Text(
+                                  'show more',
+                                  style: TextStyle(
+                                      fontSize: FONT_SIZE, color: Colors.blue),
+                                )
+                              : Text(''),
                         ],
                       ),
                     ),

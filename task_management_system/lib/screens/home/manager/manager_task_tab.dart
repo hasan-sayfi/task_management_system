@@ -47,7 +47,7 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
   int count = 0;
   static const double SIZE_BETWEEN_TEXT_FIELDS = 12;
   bool _isTaskFiltered = false;
-  var size,height,width;
+  var size, height, width;
 
   // This function is used to fetch all data from the database
   void _refreshTasks() async {
@@ -65,11 +65,15 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
     });
   }
 
-  Future<void> _validateForm() async {
+  Future<void> _validateForm(int taskID) async {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate())
-      await _addTasks();
-    else
+    if (_formKey.currentState!.validate()) {
+      if (taskID != -1) {
+        await _updateTask(taskID);
+      } else {
+        await _addTasks();
+      }
+    } else
       print('Validation is false');
   }
 
@@ -430,279 +434,280 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
           builder: (context, setState) => Container(
             padding: EdgeInsets.all(20),
             // height: 850,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      DropdownButtonFormField(
-                        value: _empController == -1
-                            ? null
-                            // : _employeesValue[_empController - 1],
-                            : _employeesValue[
-                                _employeesID.indexOf(_empController)],
-                        items: _employeesValue
-                            .map((String item) => DropdownMenuItem<String>(
-                                child: Text(item), value: item))
-                            .toList(),
-                        onChanged: (String? value) {
-                          this.setState(() {
-                            _empController = _employeesID[
-                                _employeesValue.indexOf(value.toString())];
-                            print('value: $value');
-                            print(
-                                '_employeesID.indexOf(_empController): ${_employeesID.indexOf(_empController)}');
-                            print(
-                                '_employeesValue[_employeesID.indexOf(_empController)] ${_employeesValue[_employeesID.indexOf(_empController)]}');
-                            print('_empController After: ' +
-                                _empController.toString());
-                          });
-                        },
-                        validator: (value) {
-                          if (value.toString().isEmpty ||
-                              value == -1 ||
-                              value == null)
-                            return 'Please select an employee';
-                          else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.groups,
-                          ),
-                          labelText: 'Please select an employee',
-                          helperText: 'John Doe',
-                          hintText: 'Please select a employee',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: kDefaultColor,
-                        maxLength: 30,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.text,
-                        controller: _titleController,
-                        validator: (value) {
-                          if (value!.isEmpty || value.length < 6)
-                            return 'Please enter task title';
-                          else
-                            return null;
-                        },
-                        // autovalidate: true,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.title,
-                          ),
-                          labelText: 'Title',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                          // errorText: 'Error message',
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: kDefaultColor,
-                        maxLength: 150,
-                        maxLines: 3,
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (_) {
-                          _selectStartDate(context);
-                        },
-                        keyboardType: TextInputType.multiline,
-                        controller: _descController,
-                        validator: (value) {
-                          if (value!.isEmpty || value.length < 8) {
-                            return 'Please enter a valid description';
-                          } else
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.description,
-                          ),
-                          labelText: 'Description',
-                          helperText: 'Task Details',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: kDefaultColor,
-                        maxLength: 20,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.datetime,
-                        controller: _startDateController,
-                        onTap: () {
-                          _selectStartDate(context);
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty || value.length < 20) {
-                            return 'Please enter a valid Date';
-                          } else
-                            return null;
-                        },
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.date_range),
-                          labelText: 'Start Date',
-                          helperText: '1/1/1900 12:00 PM',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: kDefaultColor,
-                        maxLength: 20,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.datetime,
-                        controller: _endDateController,
-                        validator: (value) {
-                          if (value!.isEmpty || value.length < 20) {
-                            return 'Please enter a valid Date';
-                          } else
-                            return null;
-                        },
-                        readOnly: true,
-                        onTap: () {
-                          _selectEndDate(context);
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.date_range),
-                          labelText: 'End Date',
-                          helperText: '1/1/1900',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      TextFormField(
-                        cursorColor: kDefaultColor,
-                        maxLength: 100,
-                        maxLines: 2,
-                        textInputAction: TextInputAction.go,
-                        onFieldSubmitted: (_) async {
-                          // Validate form then create
-                          if (taskID == null) {
-                            _validateForm();
-                          }
-                          if (taskID != null) {
-                            await _updateTask(taskID);
-                          }
-                        },
-                        keyboardType: TextInputType.multiline,
-                        controller: _commentController,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.comment,
-                          ),
-                          labelText: 'Comment',
-                          helperText: 'If none, leave empty',
-                          enabledBorder: OutlineInputBorder(),
-                          border: OutlineInputBorder(),
-                          focusColor: kGreenDark,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kOrangeDark),
-                          ),
-                        ),
-                      ),
-                      // SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                      taskID == null
-                          ? SizedBox()
-                          : Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Text(
-                                  'Task Progress: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                Container(
-                                  width: 300,
-                                  child: SfSlider(
-                                    value: _rating.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    interval: 20,
-                                    showTicks: true,
-                                    showLabels: true,
-                                    enableTooltip: true,
-                                    minorTicksPerInterval: 2,
-                                    stepSize: 5,
-                                    onChanged: (newRating) {
-                                      setState(() {
-                                        _rating = newRating.toInt();
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        DropdownButtonFormField(
+                          value: _empController == -1
+                              ? null
+                              : _employeesValue[
+                                  _employeesID.indexOf(_empController)],
+                          items: _employeesValue
+                              .map((String item) => DropdownMenuItem<String>(
+                                  child: Text(item), value: item))
+                              .toList(),
+                          onChanged: (String? value) {
+                            this.setState(() {
+                              _empController = _employeesID[
+                                  _employeesValue.indexOf(value.toString())];
+                              print('value: $value');
+                              print(
+                                  '_employeesID.indexOf(_empController): ${_employeesID.indexOf(_empController)}');
+                              print(
+                                  '_employeesValue[_employeesID.indexOf(_empController)] ${_employeesValue[_employeesID.indexOf(_empController)]}');
+                              print('_empController After: ' +
+                                  _empController.toString());
+                            });
+                          },
+                          validator: (value) {
+                            if (value.toString().isEmpty ||
+                                value == -1 ||
+                                value == null)
+                              return 'Please select an employee';
+                            else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.groups,
                             ),
-
-                      SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Card(
-                        color: Colors.grey[200],
-                        child: InkWell(
-                          onTap: () async {
+                            labelText: 'Please select an employee',
+                            helperText: 'John Doe',
+                            hintText: 'Please select a employee',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: kDefaultColor,
+                          maxLength: 30,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.text,
+                          controller: _titleController,
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 6)
+                              return 'Please enter task title';
+                            else
+                              return null;
+                          },
+                          // autovalidate: true,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.title,
+                            ),
+                            labelText: 'Title',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                            // errorText: 'Error message',
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: kDefaultColor,
+                          maxLength: 150,
+                          maxLines: 3,
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) {
+                            _selectStartDate(context);
+                          },
+                          keyboardType: TextInputType.multiline,
+                          controller: _descController,
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 8) {
+                              return 'Please enter a valid description';
+                            } else
+                              return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.description,
+                            ),
+                            labelText: 'Description',
+                            helperText: 'Task Details',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: kDefaultColor,
+                          maxLength: 20,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.datetime,
+                          controller: _startDateController,
+                          onTap: () {
+                            _selectStartDate(context);
+                          },
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 20) {
+                              return 'Please enter a valid Date';
+                            } else
+                              return null;
+                          },
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.date_range),
+                            labelText: 'Start Date',
+                            helperText: '1/1/1900 12:00 PM',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: kDefaultColor,
+                          maxLength: 20,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.datetime,
+                          controller: _endDateController,
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 20) {
+                              return 'Please enter a valid Date';
+                            } else
+                              return null;
+                          },
+                          readOnly: true,
+                          onTap: () {
+                            _selectEndDate(context);
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.date_range),
+                            labelText: 'End Date',
+                            helperText: '1/1/1900',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        TextFormField(
+                          cursorColor: kDefaultColor,
+                          maxLength: 100,
+                          maxLines: 2,
+                          textInputAction: TextInputAction.go,
+                          onFieldSubmitted: (_) async {
                             // Validate form then create
                             if (taskID == null) {
-                              _validateForm();
+                              await _validateForm(-1);
                             }
                             if (taskID != null) {
-                              await _updateTask(taskID);
+                              _validateForm(taskID);
                             }
                           },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
-                            child: Text(
-                              taskID == null
-                                  ? "Create New Task"
-                                  : 'Update Task',
-                              style: TextStyle(
-                                color: kOrangeDark,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                          keyboardType: TextInputType.multiline,
+                          controller: _commentController,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.comment,
+                            ),
+                            labelText: 'Comment',
+                            helperText: 'If none, leave empty',
+                            enabledBorder: OutlineInputBorder(),
+                            border: OutlineInputBorder(),
+                            focusColor: kGreenDark,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kOrangeDark),
+                            ),
+                          ),
+                        ),
+                        // SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                        taskID == null
+                            ? SizedBox()
+                            : Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    'Task Progress: ',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 300,
+                                    child: SfSlider(
+                                      value: _rating.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      interval: 20,
+                                      showTicks: true,
+                                      showLabels: true,
+                                      enableTooltip: true,
+                                      minorTicksPerInterval: 2,
+                                      stepSize: 5,
+                                      onChanged: (newRating) {
+                                        setState(() {
+                                          _rating = newRating.toInt();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                        SizedBox(height: SIZE_BETWEEN_TEXT_FIELDS),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Card(
+                          color: Colors.grey[200],
+                          child: InkWell(
+                            onTap: () async {
+                              // Validate form then create
+                              if (taskID == null) {
+                                await _validateForm(-1);
+                              }
+                              if (taskID != null) {
+                                await _validateForm(taskID);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 10),
+                              child: Text(
+                                taskID == null
+                                    ? "Create New Task"
+                                    : 'Update Task',
+                                style: TextStyle(
+                                  color: kOrangeDark,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
                               ),
                             ),
                           ),
@@ -710,8 +715,8 @@ class _ManagerTaskTabState extends State<ManagerTaskTab> {
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
